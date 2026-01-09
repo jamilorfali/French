@@ -1,0 +1,400 @@
+#!/usr/bin/env python3
+"""
+Database seeding script.
+Populates the database with French learning content.
+"""
+import sys
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+from sqlalchemy.orm import Session
+from app.database import SessionLocal, init_db
+from app.models import (
+    CEFRLevel, Vocabulary, Grammar, Verb, VerbConjugation, Lesson, User
+)
+from app.models.vocabulary import Gender, PartOfSpeech
+from app.models.verb import VerbGroup, Auxiliary
+
+from app.seed.cefr_levels import CEFR_LEVELS
+from app.seed.vocabulary_a1 import VOCABULARY_A1
+from app.seed.verbs_a1 import VERBS_A1
+from app.seed.grammar_a1 import GRAMMAR_A1
+
+
+def seed_cefr_levels(db: Session) -> dict[str, CEFRLevel]:
+    """Seed CEFR levels and return a mapping of code to level."""
+    print("Seeding CEFR levels...")
+    levels = {}
+
+    for level_data in CEFR_LEVELS:
+        existing = db.query(CEFRLevel).filter(CEFRLevel.code == level_data["code"]).first()
+        if existing:
+            levels[level_data["code"]] = existing
+            continue
+
+        level = CEFRLevel(
+            code=level_data["code"],
+            name=level_data["name"],
+            order=level_data["order"],
+            af_levels=level_data["af_levels"],
+            vocabulary_target=level_data["vocabulary_target"],
+            description=level_data["description"]
+        )
+        db.add(level)
+        levels[level_data["code"]] = level
+
+    db.commit()
+    print(f"  ✓ Seeded {len(CEFR_LEVELS)} CEFR levels")
+    return levels
+
+
+def seed_vocabulary(db: Session, levels: dict[str, CEFRLevel]):
+    """Seed vocabulary items."""
+    print("Seeding vocabulary...")
+    count = 0
+
+    # A1 Vocabulary
+    a1_level = levels.get("A1")
+    if not a1_level:
+        print("  ✗ A1 level not found!")
+        return
+
+    for vocab_data in VOCABULARY_A1:
+        existing = db.query(Vocabulary).filter(
+            Vocabulary.french == vocab_data["french"],
+            Vocabulary.cefr_level_id == a1_level.id
+        ).first()
+
+        if existing:
+            continue
+
+        # Map gender string to enum
+        gender_map = {"m": Gender.MASCULINE, "f": Gender.FEMININE, "-": Gender.NONE, "mf": Gender.BOTH}
+        gender = gender_map.get(vocab_data.get("gender", "-"), Gender.NONE)
+
+        # Map part of speech string to enum
+        pos_map = {
+            "noun": PartOfSpeech.NOUN,
+            "verb": PartOfSpeech.VERB,
+            "adjective": PartOfSpeech.ADJECTIVE,
+            "adverb": PartOfSpeech.ADVERB,
+            "pronoun": PartOfSpeech.PRONOUN,
+            "preposition": PartOfSpeech.PREPOSITION,
+            "conjunction": PartOfSpeech.CONJUNCTION,
+            "interjection": PartOfSpeech.INTERJECTION,
+            "article": PartOfSpeech.ARTICLE,
+            "phrase": PartOfSpeech.PHRASE,
+        }
+        part_of_speech = pos_map.get(vocab_data.get("part_of_speech", "noun"), PartOfSpeech.NOUN)
+
+        vocab = Vocabulary(
+            cefr_level_id=a1_level.id,
+            french=vocab_data["french"],
+            english=vocab_data["english"],
+            spanish=vocab_data.get("spanish"),
+            gender=gender,
+            part_of_speech=part_of_speech,
+            phonetic=vocab_data.get("phonetic"),
+            is_cognate=vocab_data.get("is_cognate", False),
+            cognate_spanish=vocab_data.get("cognate_spanish"),
+            cognate_note=vocab_data.get("cognate_note"),
+            is_false_friend=vocab_data.get("is_false_friend", False),
+            category=vocab_data.get("category"),
+            example_french=vocab_data.get("example_french"),
+            example_english=vocab_data.get("example_english"),
+            example_spanish=vocab_data.get("example_spanish"),
+            notes=vocab_data.get("notes"),
+        )
+        db.add(vocab)
+        count += 1
+
+    db.commit()
+    print(f"  ✓ Seeded {count} vocabulary items")
+
+
+def seed_verbs(db: Session, levels: dict[str, CEFRLevel]):
+    """Seed verbs and their conjugations."""
+    print("Seeding verbs...")
+    verb_count = 0
+    conj_count = 0
+
+    a1_level = levels.get("A1")
+    if not a1_level:
+        print("  ✗ A1 level not found!")
+        return
+
+    for verb_data in VERBS_A1:
+        existing = db.query(Verb).filter(Verb.infinitive == verb_data["infinitive"]).first()
+
+        if existing:
+            continue
+
+        # Map group and auxiliary to enums
+        group_map = {1: VerbGroup.FIRST, 2: VerbGroup.SECOND, 3: VerbGroup.THIRD}
+        aux_map = {"avoir": Auxiliary.AVOIR, "être": Auxiliary.ETRE}
+
+        verb = Verb(
+            cefr_level_id=a1_level.id,
+            infinitive=verb_data["infinitive"],
+            english=verb_data["english"],
+            spanish=verb_data.get("spanish"),
+            group=group_map.get(verb_data["group"], VerbGroup.FIRST),
+            is_irregular=verb_data.get("is_irregular", False),
+            auxiliary=aux_map.get(verb_data.get("auxiliary", "avoir"), Auxiliary.AVOIR),
+            past_participle=verb_data.get("past_participle"),
+            present_participle=verb_data.get("present_participle"),
+            notes=verb_data.get("notes"),
+            spanish_comparison=verb_data.get("spanish_comparison"),
+        )
+        db.add(verb)
+        db.flush()  # Get the verb ID
+        verb_count += 1
+
+        # Add conjugations
+        for conj_data in verb_data.get("conjugations", []):
+            conjugation = VerbConjugation(
+                verb_id=verb.id,
+                tense=conj_data["tense"],
+                mood=conj_data.get("mood", "indicatif"),
+                je=conj_data.get("je"),
+                tu=conj_data.get("tu"),
+                il_elle=conj_data.get("il_elle"),
+                nous=conj_data.get("nous"),
+                vous=conj_data.get("vous"),
+                ils_elles=conj_data.get("ils_elles"),
+                spanish_equivalent=conj_data.get("spanish_equivalent"),
+            )
+            db.add(conjugation)
+            conj_count += 1
+
+    db.commit()
+    print(f"  ✓ Seeded {verb_count} verbs with {conj_count} conjugations")
+
+
+def seed_grammar(db: Session, levels: dict[str, CEFRLevel]):
+    """Seed grammar topics."""
+    print("Seeding grammar...")
+    count = 0
+
+    a1_level = levels.get("A1")
+    if not a1_level:
+        print("  ✗ A1 level not found!")
+        return
+
+    for grammar_data in GRAMMAR_A1:
+        existing = db.query(Grammar).filter(
+            Grammar.topic == grammar_data["topic"],
+            Grammar.cefr_level_id == a1_level.id
+        ).first()
+
+        if existing:
+            continue
+
+        grammar = Grammar(
+            cefr_level_id=a1_level.id,
+            topic=grammar_data["topic"],
+            title=grammar_data["title"],
+            order=grammar_data.get("order", 0),
+            explanation_en=grammar_data["explanation_en"],
+            explanation_es=grammar_data.get("explanation_es"),
+            spanish_comparison=grammar_data.get("spanish_comparison"),
+            examples=grammar_data.get("examples", []),
+            common_mistakes=grammar_data.get("common_mistakes", []),
+            tips=grammar_data.get("tips", []),
+            related_topics=grammar_data.get("related_topics", []),
+        )
+        db.add(grammar)
+        count += 1
+
+    db.commit()
+    print(f"  ✓ Seeded {count} grammar topics")
+
+
+def seed_lessons(db: Session, levels: dict[str, CEFRLevel]):
+    """Seed lessons."""
+    print("Seeding lessons...")
+
+    a1_level = levels.get("A1")
+    if not a1_level:
+        print("  ✗ A1 level not found!")
+        return
+
+    a1_lessons = [
+        {
+            "unit_number": 1,
+            "title": "Bonjour! Introductions",
+            "description": "Learn to greet people and introduce yourself in French.",
+            "objectives": [
+                "Say hello and goodbye",
+                "Introduce yourself",
+                "Ask and answer simple questions about identity",
+                "Use subject pronouns je, tu, il, elle"
+            ],
+            "themes": ["greetings", "introductions", "identity"],
+            "grammar_topics": ["subject_pronouns", "etre_avoir"],
+            "estimated_duration": 45
+        },
+        {
+            "unit_number": 2,
+            "title": "Ma famille et moi",
+            "description": "Talk about your family and describe people.",
+            "objectives": [
+                "Name family members",
+                "Describe people using basic adjectives",
+                "Use possessive adjectives (mon, ma, mes)",
+                "Count from 1-20"
+            ],
+            "themes": ["family", "descriptions", "numbers"],
+            "grammar_topics": ["possessive_adjectives", "noun_gender"],
+            "estimated_duration": 45
+        },
+        {
+            "unit_number": 3,
+            "title": "Les jours et les mois",
+            "description": "Learn days of the week, months, and talk about time.",
+            "objectives": [
+                "Name days of the week",
+                "Name months of the year",
+                "Talk about dates and schedules",
+                "Use time expressions"
+            ],
+            "themes": ["days", "months", "time"],
+            "grammar_topics": ["definite_articles"],
+            "estimated_duration": 45
+        },
+        {
+            "unit_number": 4,
+            "title": "J'aime, je n'aime pas",
+            "description": "Express likes, dislikes, and preferences.",
+            "objectives": [
+                "Express what you like and don't like",
+                "Use -ER verbs in present tense",
+                "Form negative sentences with ne...pas",
+                "Talk about food and activities"
+            ],
+            "themes": ["preferences", "food", "activities"],
+            "grammar_topics": ["present_tense_er_verbs", "negation", "indefinite_articles"],
+            "estimated_duration": 45
+        },
+        {
+            "unit_number": 5,
+            "title": "Où habites-tu?",
+            "description": "Talk about where you live and describe places.",
+            "objectives": [
+                "Describe your home and neighborhood",
+                "Use prepositions of place",
+                "Talk about cities and countries",
+                "Ask and answer questions about location"
+            ],
+            "themes": ["home", "places", "location"],
+            "grammar_topics": ["prepositions_place", "asking_questions"],
+            "estimated_duration": 45
+        },
+    ]
+
+    count = 0
+    for lesson_data in a1_lessons:
+        existing = db.query(Lesson).filter(
+            Lesson.unit_number == lesson_data["unit_number"],
+            Lesson.cefr_level_id == a1_level.id
+        ).first()
+
+        if existing:
+            continue
+
+        lesson = Lesson(
+            cefr_level_id=a1_level.id,
+            unit_number=lesson_data["unit_number"],
+            title=lesson_data["title"],
+            description=lesson_data["description"],
+            objectives=lesson_data["objectives"],
+            themes=lesson_data["themes"],
+            grammar_topics=lesson_data["grammar_topics"],
+            estimated_duration=lesson_data["estimated_duration"]
+        )
+        db.add(lesson)
+        count += 1
+
+    db.commit()
+    print(f"  ✓ Seeded {count} lessons")
+
+
+def seed_default_user(db: Session):
+    """Create the default user profile."""
+    print("Creating default user...")
+
+    existing = db.query(User).first()
+    if existing:
+        print("  ✓ User already exists")
+        return
+
+    user = User(
+        name="French Learner",
+        native_language="en-US",
+        secondary_language="es-ES",
+        target_language="fr-FR",
+        current_cefr_level="A1",
+        settings={
+            "session_duration": 15,
+            "speech_rate": 0.9,
+            "show_spanish_hints": True,
+            "show_phonetic": True,
+            "daily_goal": 20,
+            "focus_areas": ["listening", "conjugation", "gender", "pronunciation"]
+        }
+    )
+    db.add(user)
+    db.commit()
+    print("  ✓ Created default user")
+
+
+def main():
+    """Main seeding function."""
+    print("\n" + "=" * 50)
+    print("🇫🇷 FrenchFlow Database Seeding")
+    print("=" * 50 + "\n")
+
+    # Initialize database
+    print("Initializing database...")
+    init_db()
+    print("  ✓ Database initialized\n")
+
+    # Create session
+    db = SessionLocal()
+
+    try:
+        # Seed all content
+        levels = seed_cefr_levels(db)
+        seed_vocabulary(db, levels)
+        seed_verbs(db, levels)
+        seed_grammar(db, levels)
+        seed_lessons(db, levels)
+        seed_default_user(db)
+
+        print("\n" + "=" * 50)
+        print("✅ Database seeding complete!")
+        print("=" * 50 + "\n")
+
+        # Print summary
+        print("Summary:")
+        print(f"  - CEFR Levels: {db.query(CEFRLevel).count()}")
+        print(f"  - Vocabulary: {db.query(Vocabulary).count()}")
+        print(f"  - Verbs: {db.query(Verb).count()}")
+        print(f"  - Conjugations: {db.query(VerbConjugation).count()}")
+        print(f"  - Grammar Topics: {db.query(Grammar).count()}")
+        print(f"  - Lessons: {db.query(Lesson).count()}")
+        print(f"  - Users: {db.query(User).count()}")
+        print()
+
+    except Exception as e:
+        print(f"\n❌ Error during seeding: {e}")
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
+if __name__ == "__main__":
+    main()

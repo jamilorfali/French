@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Base styles */
+body {
+  @apply font-sans bg-gray-50 text-gray-900 antialiased;
+  min-height: 100vh;
+}
+
+/* Custom utilities */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  /* Card component */
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-md hover:border-gray-200;
+  }
+
+  /* Button variants */
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 inline-flex items-center justify-center gap-2;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800;
+  }
+
+  .btn-secondary {
+    @apply btn bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300;
+  }
+
+  .btn-success {
+    @apply btn bg-success-500 text-white hover:bg-success-600;
+  }
+
+  .btn-danger {
+    @apply btn bg-error-500 text-white hover:bg-error-600;
+  }
+
+  .btn-outline {
+    @apply btn border-2 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  /* Input styles */
+  .input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary-100 text-primary-800;
+  }
+
+  .badge-success {
+    @apply badge bg-success-100 text-success-600;
+  }
+
+  .badge-warning {
+    @apply badge bg-warning-100 text-warning-600;
+  }
+
+  .badge-error {
+    @apply badge bg-error-100 text-error-600;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    @apply h-2 bg-gray-200 rounded-full overflow-hidden;
+  }
+
+  .progress-bar-fill {
+    @apply h-full bg-primary-500 transition-all duration-300;
+  }
+
+  /* Correct/Incorrect feedback animations */
+  .flash-correct {
+    animation: flash-green 0.5s ease-out;
+  }
+
+  .flash-incorrect {
+    animation: flash-red 0.5s ease-out;
+  }
+
+  @keyframes flash-green {
+    0% { background-color: rgb(34 197 94 / 0.3); }
+    100% { background-color: transparent; }
+  }
+
+  @keyframes flash-red {
+    0% { background-color: rgb(239 68 68 / 0.3); }
+    100% { background-color: transparent; }
+  }
+}
+
+/* Mobile-first responsive adjustments */
+@media (max-width: 640px) {
+  .card {
+    @apply rounded-lg p-4;
+  }
+
+  .btn-lg {
+    @apply w-full;
+  }
+}
+
+/* Safe area for iPhone notch/home indicator */
+@supports (padding: max(0px)) {
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+}
