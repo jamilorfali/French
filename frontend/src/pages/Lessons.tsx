@@ -83,11 +83,11 @@ export default function Lessons() {
                 )}
 
                 <Link
-                  to={`/practice?lesson=${lesson.id}`}
+                  to={`/lessons/${lesson.id}`}
                   className="btn-primary btn-sm mt-4 inline-flex"
                 >
                   <Play size={16} />
-                  Start Lesson
+                  View Lesson
                 </Link>
               </div>
             </div>

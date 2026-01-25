@@ -7,6 +7,7 @@ import Grammar from './pages/Grammar';
 import Verbs from './pages/Verbs';
 import Progress from './pages/Progress';
 import Lessons from './pages/Lessons';
+import LessonDetail from './pages/LessonDetail';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/grammar" element={<Grammar />} />
         <Route path="/verbs" element={<Verbs />} />
         <Route path="/lessons" element={<Lessons />} />
+        <Route path="/lessons/:lessonId" element={<LessonDetail />} />
         <Route path="/progress" element={<Progress />} />
       </Routes>
     </Layout>
