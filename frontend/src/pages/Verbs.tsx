@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { Search, Volume2, ChevronDown, ChevronUp } from 'lucide-react';
 import { getVerbs, getVerb } from '../services/api';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
+import { useLevel } from '../contexts/LevelContext';
 import type { Verb } from '../types';
 
 export default function Verbs() {
+  const { currentLevel, currentLevelInfo, loading: levelLoading } = useLevel();
   const [verbs, setVerbs] = useState<Verb[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -14,10 +16,13 @@ export default function Verbs() {
   const { speakFrench, speaking } = useSpeechSynthesis();
 
   useEffect(() => {
+    if (levelLoading) return;
+
     const fetchData = async () => {
+      setLoading(true);
       try {
         const data = await getVerbs({
-          level: 'A1',
+          level: currentLevel,
           search: search || undefined,
         });
         setVerbs(data);
@@ -29,7 +34,7 @@ export default function Verbs() {
     };
 
     fetchData();
-  }, [search]);
+  }, [currentLevel, levelLoading, search]);
 
   const handleExpand = async (id: number) => {
     if (expandedId === id) {
@@ -64,7 +69,7 @@ export default function Verbs() {
     );
   };
 
-  if (loading) {
+  if (loading || levelLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
@@ -74,7 +79,12 @@ export default function Verbs() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Verbs</h1>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Verbs</h1>
+        <p className="text-gray-600">
+          Level {currentLevel} - {currentLevelInfo?.name || 'Beginner'}
+        </p>
+      </div>
 
       {/* Search */}
       <div className="relative">

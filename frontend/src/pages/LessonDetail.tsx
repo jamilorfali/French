@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Target, BookOpen, Play, CheckCircle } from 'lucide-react';
 import { getLesson, getGrammarTopics, getVocabulary } from '../services/api';
+import { useLevel } from '../contexts/LevelContext';
 import type { Lesson, Grammar, Vocabulary } from '../types';
 
 export default function LessonDetail() {
   const { lessonId } = useParams<{ lessonId: string }>();
+  const { currentLevel, loading: levelLoading } = useLevel();
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [relatedGrammar, setRelatedGrammar] = useState<Grammar[]>([]);
   const [relatedVocabulary, setRelatedVocabulary] = useState<Vocabulary[]>([]);
@@ -14,7 +16,7 @@ export default function LessonDetail() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!lessonId) return;
+      if (!lessonId || levelLoading) return;
 
       try {
         // Fetch lesson details
@@ -22,14 +24,14 @@ export default function LessonDetail() {
         setLesson(lessonData);
 
         // Fetch related grammar topics
-        const grammarData = await getGrammarTopics('A1');
+        const grammarData = await getGrammarTopics(currentLevel);
         const filteredGrammar = grammarData.filter((g: Grammar) =>
           (lessonData.grammar_topics || []).includes(g.topic)
         );
         setRelatedGrammar(filteredGrammar);
 
         // Fetch vocabulary related to lesson themes
-        const vocabData = await getVocabulary({ level: 'A1' });
+        const vocabData = await getVocabulary({ level: currentLevel });
         const filteredVocab = vocabData.filter((v: Vocabulary) =>
           (lessonData.themes || []).some((theme: string) =>
             v.category?.toLowerCase().includes(theme.toLowerCase())
@@ -44,7 +46,7 @@ export default function LessonDetail() {
     };
 
     fetchData();
-  }, [lessonId]);
+  }, [lessonId, currentLevel, levelLoading]);
 
   if (loading) {
     return (

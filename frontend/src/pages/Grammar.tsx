@@ -1,17 +1,22 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
 import { getGrammarTopics } from '../services/api';
+import { useLevel } from '../contexts/LevelContext';
 import type { Grammar as GrammarType } from '../types';
 
 export default function Grammar() {
+  const { currentLevel, currentLevelInfo, loading: levelLoading } = useLevel();
   const [topics, setTopics] = useState<GrammarType[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
   useEffect(() => {
+    if (levelLoading) return;
+
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const data = await getGrammarTopics('A1');
+        const data = await getGrammarTopics(currentLevel);
         setTopics(data);
       } catch (error) {
         console.error('Failed to fetch grammar:', error);
@@ -21,9 +26,9 @@ export default function Grammar() {
     };
 
     fetchData();
-  }, []);
+  }, [currentLevel, levelLoading]);
 
-  if (loading) {
+  if (loading || levelLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
@@ -33,10 +38,12 @@ export default function Grammar() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Grammar Guide</h1>
-      <p className="text-gray-600">
-        Master French grammar with explanations tailored for Spanish speakers.
-      </p>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Grammar Guide</h1>
+        <p className="text-gray-600">
+          Level {currentLevel} - {currentLevelInfo?.name || 'Beginner'} | Master French grammar with explanations tailored for Spanish speakers.
+        </p>
+      </div>
 
       <div className="space-y-3">
         {topics.map((topic) => (

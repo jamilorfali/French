@@ -2,16 +2,21 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Clock, Target, Play } from 'lucide-react';
 import { getLessons } from '../services/api';
+import { useLevel } from '../contexts/LevelContext';
 import type { Lesson } from '../types';
 
 export default function Lessons() {
+  const { currentLevel, currentLevelInfo, loading: levelLoading } = useLevel();
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (levelLoading) return;
+
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const data = await getLessons('A1');
+        const data = await getLessons(currentLevel);
         setLessons(data);
       } catch (error) {
         console.error('Failed to fetch lessons:', error);
@@ -21,9 +26,9 @@ export default function Lessons() {
     };
 
     fetchData();
-  }, []);
+  }, [currentLevel, levelLoading]);
 
-  if (loading) {
+  if (loading || levelLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
@@ -35,7 +40,9 @@ export default function Lessons() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Lessons</h1>
-        <p className="text-gray-600">Level A1 - Beginner</p>
+        <p className="text-gray-600">
+          Level {currentLevel} - {currentLevelInfo?.name || 'Beginner'}
+        </p>
       </div>
 
       <div className="space-y-4">

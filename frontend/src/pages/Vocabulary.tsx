@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { Search, Volume2, Filter } from 'lucide-react';
 import { getVocabulary, getVocabularyCategories } from '../services/api';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
+import { useLevel } from '../contexts/LevelContext';
 import type { Vocabulary as VocabType } from '../types';
 
 export default function Vocabulary() {
+  const { currentLevel, currentLevelInfo, loading: levelLoading } = useLevel();
   const [vocabulary, setVocabulary] = useState<VocabType[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -15,17 +17,20 @@ export default function Vocabulary() {
   const { speakFrench, speaking } = useSpeechSynthesis();
 
   useEffect(() => {
+    if (levelLoading) return;
+
     const fetchData = async () => {
+      setLoading(true);
       try {
         const [vocabData, categoryData] = await Promise.all([
           getVocabulary({
-            level: 'A1',
+            level: currentLevel,
             category: selectedCategory || undefined,
             cognates_only: showCognatesOnly,
             search: search || undefined,
             limit: 100,
           }),
-          getVocabularyCategories('A1'),
+          getVocabularyCategories(currentLevel),
         ]);
         setVocabulary(vocabData);
         setCategories(categoryData.categories);
@@ -37,7 +42,7 @@ export default function Vocabulary() {
     };
 
     fetchData();
-  }, [selectedCategory, showCognatesOnly, search]);
+  }, [currentLevel, levelLoading, selectedCategory, showCognatesOnly, search]);
 
   const getGenderBadge = (gender?: string) => {
     if (!gender || gender === '-') return null;
@@ -52,7 +57,7 @@ export default function Vocabulary() {
     );
   };
 
-  if (loading) {
+  if (loading || levelLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
@@ -62,7 +67,12 @@ export default function Vocabulary() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Vocabulary</h1>
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Vocabulary</h1>
+        <p className="text-gray-600">
+          Level {currentLevel} - {currentLevelInfo?.name || 'Beginner'}
+        </p>
+      </div>
 
       {/* Search and Filters */}
       <div className="space-y-3">

@@ -10,16 +10,15 @@ import {
   Zap,
   ChevronDown,
 } from 'lucide-react';
-import { getOverallProgress, getWeakAreas, getLevels, getUserProfile, updateUserProfile } from '../services/api';
-import type { OverallProgress, WeakArea, CEFRLevel } from '../types';
+import { getOverallProgress, getWeakAreas } from '../services/api';
+import { useLevel } from '../contexts/LevelContext';
+import type { OverallProgress, WeakArea } from '../types';
 
 export default function Home() {
+  const { currentLevel, levels, currentLevelInfo, setLevel, loading: levelLoading, levelChanging } = useLevel();
   const [progress, setProgress] = useState<OverallProgress | null>(null);
   const [weakAreas, setWeakAreas] = useState<WeakArea[]>([]);
-  const [levels, setLevels] = useState<CEFRLevel[]>([]);
-  const [currentLevel, setCurrentLevel] = useState<string>('A1');
   const [loading, setLoading] = useState(true);
-  const [levelChanging, setLevelChanging] = useState(false);
 
   const fetchProgressData = async () => {
     try {
@@ -35,56 +34,26 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch levels and user profile in parallel
-        const [levelsData, userProfile] = await Promise.all([
-          getLevels(),
-          getUserProfile(),
-        ]);
-        setLevels(levelsData);
-        setCurrentLevel(userProfile.current_cefr_level || 'A1');
-
-        // Fetch progress data
-        await fetchProgressData();
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+    if (!levelLoading) {
+      fetchProgressData().finally(() => setLoading(false));
+    }
+  }, [levelLoading, currentLevel]);
 
   const handleLevelChange = async (newLevel: string) => {
-    if (newLevel === currentLevel || levelChanging) return;
-
-    setLevelChanging(true);
     try {
-      // Update user profile with new level
-      await updateUserProfile({ current_cefr_level: newLevel });
-      setCurrentLevel(newLevel);
-
-      // Refresh progress data for the new level
-      await fetchProgressData();
+      await setLevel(newLevel);
     } catch (error) {
       console.error('Failed to update level:', error);
-    } finally {
-      setLevelChanging(false);
     }
   };
 
-  if (loading) {
+  if (loading || levelLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
       </div>
     );
   }
-
-  // Get the Alliance Française levels for the current CEFR level
-  const currentLevelInfo = levels.find(l => l.code === currentLevel);
 
   return (
     <div className="space-y-6">
