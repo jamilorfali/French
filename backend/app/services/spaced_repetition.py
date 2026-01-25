@@ -150,7 +150,8 @@ class SpacedRepetitionService:
                 interval=1,
                 repetitions=0,
                 correct_count=0,
-                incorrect_count=0
+                incorrect_count=0,
+                total_time_seconds=0
             )
             db.add(progress)
 
@@ -172,7 +173,7 @@ class SpacedRepetitionService:
         progress.next_review = result["next_review"]
         progress.last_reviewed = datetime.now()
         progress.last_quality = quality
-        progress.total_time_seconds += time_taken_seconds
+        progress.total_time_seconds = (progress.total_time_seconds or 0) + time_taken_seconds
 
         if correct:
             progress.correct_count += 1

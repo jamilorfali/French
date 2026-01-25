@@ -12,7 +12,7 @@ from ..schemas import GrammarResponse, GrammarDetail
 router = APIRouter(prefix="/grammar", tags=["grammar"])
 
 
-@router.get("/", response_model=List[GrammarResponse])
+@router.get("/", response_model=List[GrammarDetail])
 def get_grammar_topics(
     level: Optional[str] = Query(None, description="Filter by CEFR level"),
     db: Session = Depends(get_db)
