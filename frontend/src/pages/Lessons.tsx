@@ -59,20 +59,20 @@ export default function Lessons() {
                     <Clock size={12} className="mr-1" />
                     {lesson.estimated_duration} min
                   </span>
-                  {lesson.themes.slice(0, 3).map((theme) => (
+                  {(lesson.themes || []).slice(0, 3).map((theme) => (
                     <span key={theme} className="badge badge-primary">
                       {theme}
                     </span>
                   ))}
                 </div>
 
-                {lesson.objectives.length > 0 && (
+                {(lesson.objectives || []).length > 0 && (
                   <div className="mt-3">
                     <h4 className="text-sm font-medium text-gray-700 mb-1">
                       Objectives:
                     </h4>
                     <ul className="text-sm text-gray-600 space-y-1">
-                      {lesson.objectives.slice(0, 3).map((obj, idx) => (
+                      {(lesson.objectives || []).slice(0, 3).map((obj, idx) => (
                         <li key={idx} className="flex items-start gap-2">
                           <Target size={14} className="mt-0.5 text-primary-500" />
                           {obj}
