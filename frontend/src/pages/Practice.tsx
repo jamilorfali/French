@@ -116,7 +116,7 @@ export default function Practice() {
   const handlePlayAudio = useCallback(() => {
     const text = exercise?.content?.french_text || exercise?.content?.expected_text || exercise?.content?.prompt;
     if (text) {
-      const frenchMatch = String(text).match(/[''""]([ ^''""]+)[''""]/);
+      const frenchMatch = String(text).match(/[''""]([ ^''""]+)[''""]/) ;
       speakFrench(frenchMatch ? frenchMatch[1] : String(text));
     }
   }, [exercise, speakFrench]);
@@ -142,7 +142,7 @@ export default function Practice() {
           <div className="grid grid-cols-3 gap-3">
             {[5, 15, 30].map((mins) => (
               <button key={mins} onClick={() => setDuration(mins)}
-                className={ + (duration === mins ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${duration === mins ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
                 {mins} min
               </button>
             ))}
@@ -154,7 +154,7 @@ export default function Practice() {
             {['listening', 'conjugation', 'gender', 'pronunciation'].map((area) => (
               <button key={area}
                 onClick={() => setFocusAreas((prev) => prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area])}
-                className={ + (focusAreas.includes(area) ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')}>
+                className={`px-4 py-2 rounded-lg font-medium transition-colors capitalize ${focusAreas.includes(area) ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
                 {area}
               </button>
             ))}
@@ -193,17 +193,19 @@ export default function Practice() {
     );
   }
 
+  const progressWidth = `${((currentIndex + 1) / Math.max(totalExercises, 1)) * 100}%`;
+
   return (
     <div className="max-w-md mx-auto space-y-6">
       <div className="flex items-center gap-3">
         <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-          <div className="h-full bg-blue-600 transition-all duration-300" style={{ width:  }} />
+          <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: progressWidth }} />
         </div>
         <span className="text-sm text-gray-500 font-medium">{currentIndex + 1}/{totalExercises}</span>
       </div>
 
       {exercise && (
-        <div className={ + (sessionState === 'feedback' ? (result?.correct ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50') : 'border-gray-200')}>
+        <div className={`bg-white rounded-xl shadow-sm border p-6 ${sessionState === 'feedback' ? (result?.correct ? 'border-green-300 bg-green-50' : 'border-red-300 bg-red-50') : 'border-gray-200'}`}>
           <div className="mb-4">
             <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium capitalize">{getExerciseDisplayType()}</span>
           </div>
@@ -212,7 +214,7 @@ export default function Practice() {
             {(exercise.type === 'listening' || exercise.type === 'speaking') && (
               <div className="text-center mb-4">
                 <button onClick={handlePlayAudio} disabled={speaking}
-                  className={ + (speaking ? 'bg-gray-300 text-gray-500' : 'bg-blue-600 text-white hover:bg-blue-700')}>
+                  className={`px-6 py-3 rounded-lg font-medium flex items-center gap-2 mx-auto ${speaking ? 'bg-gray-300 text-gray-500' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
                   {speaking ? <Pause size={20} /> : <Volume2 size={20} />}
                   {speaking ? 'Playing...' : 'Play Audio'}
                 </button>
@@ -231,7 +233,7 @@ export default function Practice() {
                   <div className="space-y-2">
                     {(exercise.content?.options as string[]).map((option, idx) => (
                       <button key={idx} onClick={() => setUserAnswer(idx)}
-                        className={ + (userAnswer === idx ? 'bg-blue-100 border-2 border-blue-500 text-blue-900' : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100')}>
+                        className={`w-full p-4 text-left rounded-lg flex items-center gap-3 transition-colors ${userAnswer === idx ? 'bg-blue-100 border-2 border-blue-500 text-blue-900' : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'}`}>
                         <span className="font-medium">{String.fromCharCode(65 + idx)}.</span> {option}
                       </button>
                     ))}
@@ -242,7 +244,7 @@ export default function Practice() {
                   <div className="flex gap-4 justify-center">
                     {['le', 'la'].map((article) => (
                       <button key={article} onClick={() => setUserAnswer(article)}
-                        className={ + (userAnswer === article ? 'bg-blue-100 border-2 border-blue-500 text-blue-900' : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100')}>
+                        className={`px-8 py-4 text-2xl font-bold rounded-lg transition-colors ${userAnswer === article ? 'bg-blue-100 border-2 border-blue-500 text-blue-900' : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'}`}>
                         {article}
                       </button>
                     ))}
@@ -258,7 +260,7 @@ export default function Practice() {
                 {(exercise.type === 'speaking' || exercise.type === 'pronunciation') && !hasOptions() && (
                   <div className="text-center space-y-4">
                     <button onClick={listening ? stopListening : handleStartRecording} disabled={!sttSupported}
-                      className={ + (listening ? 'bg-red-500 text-white animate-pulse' : sttSupported ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500')}>
+                      className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto ${listening ? 'bg-red-500 text-white animate-pulse' : sttSupported ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500'}`}>
                       {listening ? <MicOff size={36} /> : <Mic size={36} />}
                     </button>
                     <p className="text-sm text-gray-500">{!sttSupported ? 'Speech recognition not supported' : listening ? 'Listening... Click to stop' : 'Click to start recording'}</p>
@@ -280,7 +282,7 @@ export default function Practice() {
           </div>
 
           {sessionState === 'feedback' && result && (
-            <div className={ + (result.correct ? 'bg-green-100' : 'bg-red-100')}>
+            <div className={`mt-4 p-4 rounded-lg ${result.correct ? 'bg-green-100' : 'bg-red-100'}`}>
               <div className="flex items-center gap-2 mb-2">
                 {result.correct ? (<><Check className="text-green-600" size={24} /><span className="font-bold text-green-700 text-lg">Correct!</span></>) : (<><X className="text-red-600" size={24} /><span className="font-bold text-red-700 text-lg">Incorrect</span></>)}
               </div>
@@ -296,7 +298,7 @@ export default function Practice() {
       <div className="flex gap-3">
         {sessionState === 'active' && (
           <button onClick={handleSubmit} disabled={userAnswer === null || isSubmitting}
-            className={ + (userAnswer === null || isSubmitting ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700')}>
+            className={`flex-1 py-4 rounded-lg font-semibold flex items-center justify-center gap-2 ${userAnswer === null || isSubmitting ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
             <Check size={20} /> {isSubmitting ? 'Submitting...' : 'Submit'}
           </button>
         )}
