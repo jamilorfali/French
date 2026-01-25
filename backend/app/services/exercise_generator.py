@@ -123,27 +123,52 @@ class ExerciseGenerator:
 
     def generate_listening_exercise(
         self,
-        vocabulary: Vocabulary
+        vocabulary: Vocabulary,
+        all_vocabulary: list = None
     ) -> dict:
         """
-        Generate a listening comprehension exercise.
+        Generate a listening comprehension exercise with multiple choice options.
         The frontend will use TTS to read the French text.
 
         Args:
             vocabulary: Vocabulary item
+            all_vocabulary: List of all vocabulary for distractors
 
         Returns:
             Exercise content dictionary
         """
+        # Get distractors for multiple choice
+        options = [vocabulary.english]
+        if all_vocabulary:
+            distractors = [
+                v for v in all_vocabulary
+                if v.id != vocabulary.id and v.english != vocabulary.english
+            ]
+            random.shuffle(distractors)
+            options.extend([d.english for d in distractors[:3]])
+        else:
+            # Fallback distractors if no vocabulary list provided
+            options.extend(["the house", "the book", "the water"])
+
+        random.shuffle(options)
+        correct_index = options.index(vocabulary.english)
+
         content = {
             "type": "listening",
             "french_text": vocabulary.example_french or vocabulary.french,
+            "prompt": "Listen and select what you heard:",
             "question": "What did you hear? Select the correct translation.",
+            "options": options,
             "vocabulary_id": vocabulary.id,
             "play_speed": 1.0,
         }
 
+        if vocabulary.is_cognate and vocabulary.spanish:
+            content["spanish_hint"] = f"Similar to Spanish: {vocabulary.spanish}"
+
         answer = {
+            "correct_index": correct_index,
+            "correct_answer": vocabulary.english,
             "french": vocabulary.french,
             "english": vocabulary.english,
             "phonetic": vocabulary.phonetic,
@@ -399,8 +424,25 @@ class ExerciseGenerator:
 
         exercises = []
 
-        # Default exercise type distribution
-        if exercise_types is None:
+        # Build exercise types based on focus areas
+        if focus_areas and len(focus_areas) > 0:
+            # Only include exercise types matching focus areas
+            exercise_types = []
+            if "listening" in focus_areas:
+                exercise_types.extend([ExerciseType.LISTENING] * 3)
+                exercise_types.append(ExerciseType.MULTIPLE_CHOICE)
+            if "conjugation" in focus_areas:
+                exercise_types.extend([ExerciseType.CONJUGATION] * 4)
+            if "gender" in focus_areas:
+                exercise_types.extend([ExerciseType.GENDER] * 4)
+            if "pronunciation" in focus_areas:
+                exercise_types.extend([ExerciseType.SPEAKING] * 3)
+                exercise_types.append(ExerciseType.LISTENING)
+            # Fallback if empty
+            if not exercise_types:
+                exercise_types = [ExerciseType.VOCABULARY_FLASHCARD, ExerciseType.MULTIPLE_CHOICE]
+        elif exercise_types is None:
+            # Default mixed exercise types
             exercise_types = [
                 ExerciseType.VOCABULARY_FLASHCARD,
                 ExerciseType.MULTIPLE_CHOICE,
@@ -409,17 +451,6 @@ class ExerciseGenerator:
                 ExerciseType.CONJUGATION,
                 ExerciseType.GENDER,
             ]
-
-        # Adjust based on focus areas
-        if focus_areas:
-            if "listening" in focus_areas:
-                exercise_types.extend([ExerciseType.LISTENING] * 2)
-            if "conjugation" in focus_areas:
-                exercise_types.extend([ExerciseType.CONJUGATION] * 2)
-            if "gender" in focus_areas:
-                exercise_types.extend([ExerciseType.GENDER] * 2)
-            if "pronunciation" in focus_areas:
-                exercise_types.extend([ExerciseType.SPEAKING] * 2)
 
         for _ in range(count):
             exercise_type = random.choice(exercise_types)
@@ -435,7 +466,7 @@ class ExerciseGenerator:
 
             elif exercise_type == ExerciseType.LISTENING and vocabulary:
                 vocab = random.choice(vocabulary)
-                exercise = self.generate_listening_exercise(vocab)
+                exercise = self.generate_listening_exercise(vocab, vocabulary)
 
             elif exercise_type == ExerciseType.SPEAKING and vocabulary:
                 vocab = random.choice(vocabulary)
