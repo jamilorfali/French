@@ -29,7 +29,7 @@ export default function LessonDetail() {
         setRelatedGrammar(filteredGrammar);
 
         // Fetch vocabulary related to lesson themes
-        const vocabData = await getVocabulary('A1');
+        const vocabData = await getVocabulary({ level: 'A1' });
         const filteredVocab = vocabData.filter((v: Vocabulary) =>
           (lessonData.themes || []).some((theme: string) =>
             v.category?.toLowerCase().includes(theme.toLowerCase())
