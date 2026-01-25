@@ -8,24 +8,45 @@ import {
   AlertCircle,
   BookOpen,
   Zap,
+  ChevronDown,
 } from 'lucide-react';
-import { getOverallProgress, getWeakAreas } from '../services/api';
-import type { OverallProgress, WeakArea } from '../types';
+import { getOverallProgress, getWeakAreas, getLevels, getUserProfile, updateUserProfile } from '../services/api';
+import type { OverallProgress, WeakArea, CEFRLevel } from '../types';
 
 export default function Home() {
   const [progress, setProgress] = useState<OverallProgress | null>(null);
   const [weakAreas, setWeakAreas] = useState<WeakArea[]>([]);
+  const [levels, setLevels] = useState<CEFRLevel[]>([]);
+  const [currentLevel, setCurrentLevel] = useState<string>('A1');
   const [loading, setLoading] = useState(true);
+  const [levelChanging, setLevelChanging] = useState(false);
+
+  const fetchProgressData = async () => {
+    try {
+      const [progressData, weakAreasData] = await Promise.all([
+        getOverallProgress(),
+        getWeakAreas(5),
+      ]);
+      setProgress(progressData);
+      setWeakAreas(weakAreasData);
+    } catch (error) {
+      console.error('Failed to fetch progress data:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [progressData, weakAreasData] = await Promise.all([
-          getOverallProgress(),
-          getWeakAreas(5),
+        // Fetch levels and user profile in parallel
+        const [levelsData, userProfile] = await Promise.all([
+          getLevels(),
+          getUserProfile(),
         ]);
-        setProgress(progressData);
-        setWeakAreas(weakAreasData);
+        setLevels(levelsData);
+        setCurrentLevel(userProfile.current_cefr_level || 'A1');
+
+        // Fetch progress data
+        await fetchProgressData();
       } catch (error) {
         console.error('Failed to fetch data:', error);
       } finally {
@@ -36,6 +57,24 @@ export default function Home() {
     fetchData();
   }, []);
 
+  const handleLevelChange = async (newLevel: string) => {
+    if (newLevel === currentLevel || levelChanging) return;
+
+    setLevelChanging(true);
+    try {
+      // Update user profile with new level
+      await updateUserProfile({ current_cefr_level: newLevel });
+      setCurrentLevel(newLevel);
+
+      // Refresh progress data for the new level
+      await fetchProgressData();
+    } catch (error) {
+      console.error('Failed to update level:', error);
+    } finally {
+      setLevelChanging(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -44,15 +83,58 @@ export default function Home() {
     );
   }
 
+  // Get the Alliance Française levels for the current CEFR level
+  const currentLevelInfo = levels.find(l => l.code === currentLevel);
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="card bg-gradient-to-r from-primary-600 to-primary-700 text-white">
         <h1 className="text-2xl font-bold mb-2">Bonjour! 👋</h1>
         <p className="text-primary-100">
-          Ready to continue your French journey? You're at level{' '}
-          <span className="font-bold text-white">{progress?.current_level || 'A1'}</span>
+          Ready to continue your French journey? You're at level:
         </p>
+
+        {/* Level Selector Dropdown */}
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <div className="relative">
+            <select
+              value={currentLevel}
+              onChange={(e) => handleLevelChange(e.target.value)}
+              disabled={levelChanging}
+              className={`
+                appearance-none bg-white/20 hover:bg-white/30
+                text-white font-bold text-lg
+                pl-4 pr-10 py-2 rounded-lg
+                border-2 border-white/30
+                cursor-pointer transition-all
+                focus:outline-none focus:ring-2 focus:ring-white/50
+                ${levelChanging ? 'opacity-50 cursor-wait' : ''}
+              `}
+            >
+              {levels.map((level) => (
+                <option
+                  key={level.code}
+                  value={level.code}
+                  className="text-gray-900 bg-white"
+                >
+                  {level.code} - {level.name}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              size={20}
+              className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+            />
+          </div>
+
+          {currentLevelInfo && (
+            <span className="text-sm text-primary-200">
+              Alliance Française: {currentLevelInfo.af_levels}
+            </span>
+          )}
+        </div>
+
         {progress && progress.current_streak_days > 0 && (
           <div className="mt-3 flex items-center gap-2 text-primary-100">
             <Zap className="text-yellow-300" size={18} />
