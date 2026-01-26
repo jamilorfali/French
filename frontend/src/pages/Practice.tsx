@@ -149,16 +149,17 @@ export default function Practice() {
           </div>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Focus Areas (optional)</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Focus Area (select one)</h2>
           <div className="flex flex-wrap gap-2">
             {['listening', 'conjugation', 'gender', 'pronunciation'].map((area) => (
               <button key={area}
-                onClick={() => setFocusAreas((prev) => prev.includes(area) ? prev.filter((a) => a !== area) : [...prev, area])}
+                onClick={() => setFocusAreas(focusAreas.includes(area) ? [] : [area])}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors capitalize ${focusAreas.includes(area) ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
                 {area}
               </button>
             ))}
           </div>
+          <p className="text-sm text-gray-500 mt-2">Leave empty for mixed practice</p>
         </div>
         <button onClick={handleStartSession}
           className="w-full py-4 bg-blue-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-blue-700">

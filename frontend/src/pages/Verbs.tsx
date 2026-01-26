@@ -105,9 +105,12 @@ export default function Verbs() {
       <div className="space-y-3">
         {verbs.map((verb) => (
           <div key={verb.id} className="card">
-            <button
+            <div
               onClick={() => handleExpand(verb.id)}
-              className="w-full flex items-center justify-between text-left"
+              className="w-full flex items-center justify-between text-left cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleExpand(verb.id); }}
             >
               <div className="flex items-center gap-3">
                 <button
@@ -117,6 +120,7 @@ export default function Verbs() {
                   }}
                   disabled={speaking}
                   className="text-primary-600 hover:text-primary-700"
+                  type="button"
                 >
                   <Volume2 size={18} />
                 </button>
@@ -138,7 +142,7 @@ export default function Verbs() {
               ) : (
                 <ChevronDown className="text-gray-400" size={20} />
               )}
-            </button>
+            </div>
 
             {expandedId === verb.id && expandedVerb && (
               <div className="mt-4 space-y-4">

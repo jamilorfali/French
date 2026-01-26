@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Database seeding script.
-Populates the database with French learning content.
+Populates the database with French learning content for all CEFR levels.
 """
 import sys
 from pathlib import Path
@@ -19,209 +19,52 @@ from app.models.verb import VerbGroup, Auxiliary
 
 from app.seed.cefr_levels import CEFR_LEVELS
 from app.seed.vocabulary_a1 import VOCABULARY_A1
+from app.seed.vocabulary_a2 import VOCABULARY_A2
+from app.seed.vocabulary_b1 import VOCABULARY_B1
+from app.seed.vocabulary_b2 import VOCABULARY_B2
+from app.seed.vocabulary_c1 import VOCABULARY_C1
 from app.seed.verbs_a1 import VERBS_A1
+from app.seed.verbs_a2 import VERBS_A2
+from app.seed.verbs_b1 import VERBS_B1
+from app.seed.verbs_b2 import VERBS_B2
+from app.seed.verbs_c1 import VERBS_C1
 from app.seed.grammar_a1 import GRAMMAR_A1
+from app.seed.grammar_a2 import GRAMMAR_A2
+from app.seed.grammar_b1 import GRAMMAR_B1
+from app.seed.grammar_b2 import GRAMMAR_B2
+from app.seed.grammar_c1 import GRAMMAR_C1
 
 
-def seed_cefr_levels(db: Session) -> dict[str, CEFRLevel]:
-    """Seed CEFR levels and return a mapping of code to level."""
-    print("Seeding CEFR levels...")
-    levels = {}
+# All vocabulary by level
+VOCABULARY_BY_LEVEL = {
+    "A1": VOCABULARY_A1,
+    "A2": VOCABULARY_A2,
+    "B1": VOCABULARY_B1,
+    "B2": VOCABULARY_B2,
+    "C1": VOCABULARY_C1,
+}
 
-    for level_data in CEFR_LEVELS:
-        existing = db.query(CEFRLevel).filter(CEFRLevel.code == level_data["code"]).first()
-        if existing:
-            levels[level_data["code"]] = existing
-            continue
+# All verbs by level
+VERBS_BY_LEVEL = {
+    "A1": VERBS_A1,
+    "A2": VERBS_A2,
+    "B1": VERBS_B1,
+    "B2": VERBS_B2,
+    "C1": VERBS_C1,
+}
 
-        level = CEFRLevel(
-            code=level_data["code"],
-            name=level_data["name"],
-            order=level_data["order"],
-            af_levels=level_data["af_levels"],
-            vocabulary_target=level_data["vocabulary_target"],
-            description=level_data["description"]
-        )
-        db.add(level)
-        levels[level_data["code"]] = level
+# All grammar by level
+GRAMMAR_BY_LEVEL = {
+    "A1": GRAMMAR_A1,
+    "A2": GRAMMAR_A2,
+    "B1": GRAMMAR_B1,
+    "B2": GRAMMAR_B2,
+    "C1": GRAMMAR_C1,
+}
 
-    db.commit()
-    print(f"  ✓ Seeded {len(CEFR_LEVELS)} CEFR levels")
-    return levels
-
-
-def seed_vocabulary(db: Session, levels: dict[str, CEFRLevel]):
-    """Seed vocabulary items."""
-    print("Seeding vocabulary...")
-    count = 0
-
-    # A1 Vocabulary
-    a1_level = levels.get("A1")
-    if not a1_level:
-        print("  ✗ A1 level not found!")
-        return
-
-    for vocab_data in VOCABULARY_A1:
-        existing = db.query(Vocabulary).filter(
-            Vocabulary.french == vocab_data["french"],
-            Vocabulary.cefr_level_id == a1_level.id
-        ).first()
-
-        if existing:
-            continue
-
-        # Map gender string to enum
-        gender_map = {"m": Gender.MASCULINE, "f": Gender.FEMININE, "-": Gender.NONE, "mf": Gender.BOTH}
-        gender = gender_map.get(vocab_data.get("gender", "-"), Gender.NONE)
-
-        # Map part of speech string to enum
-        pos_map = {
-            "noun": PartOfSpeech.NOUN,
-            "verb": PartOfSpeech.VERB,
-            "adjective": PartOfSpeech.ADJECTIVE,
-            "adverb": PartOfSpeech.ADVERB,
-            "pronoun": PartOfSpeech.PRONOUN,
-            "preposition": PartOfSpeech.PREPOSITION,
-            "conjunction": PartOfSpeech.CONJUNCTION,
-            "interjection": PartOfSpeech.INTERJECTION,
-            "article": PartOfSpeech.ARTICLE,
-            "phrase": PartOfSpeech.PHRASE,
-        }
-        part_of_speech = pos_map.get(vocab_data.get("part_of_speech", "noun"), PartOfSpeech.NOUN)
-
-        vocab = Vocabulary(
-            cefr_level_id=a1_level.id,
-            french=vocab_data["french"],
-            english=vocab_data["english"],
-            spanish=vocab_data.get("spanish"),
-            gender=gender,
-            part_of_speech=part_of_speech,
-            phonetic=vocab_data.get("phonetic"),
-            is_cognate=vocab_data.get("is_cognate", False),
-            cognate_spanish=vocab_data.get("cognate_spanish"),
-            cognate_note=vocab_data.get("cognate_note"),
-            is_false_friend=vocab_data.get("is_false_friend", False),
-            category=vocab_data.get("category"),
-            example_french=vocab_data.get("example_french"),
-            example_english=vocab_data.get("example_english"),
-            example_spanish=vocab_data.get("example_spanish"),
-            notes=vocab_data.get("notes"),
-        )
-        db.add(vocab)
-        count += 1
-
-    db.commit()
-    print(f"  ✓ Seeded {count} vocabulary items")
-
-
-def seed_verbs(db: Session, levels: dict[str, CEFRLevel]):
-    """Seed verbs and their conjugations."""
-    print("Seeding verbs...")
-    verb_count = 0
-    conj_count = 0
-
-    a1_level = levels.get("A1")
-    if not a1_level:
-        print("  ✗ A1 level not found!")
-        return
-
-    for verb_data in VERBS_A1:
-        existing = db.query(Verb).filter(Verb.infinitive == verb_data["infinitive"]).first()
-
-        if existing:
-            continue
-
-        # Map group and auxiliary to enums
-        group_map = {1: VerbGroup.FIRST, 2: VerbGroup.SECOND, 3: VerbGroup.THIRD}
-        aux_map = {"avoir": Auxiliary.AVOIR, "être": Auxiliary.ETRE}
-
-        verb = Verb(
-            cefr_level_id=a1_level.id,
-            infinitive=verb_data["infinitive"],
-            english=verb_data["english"],
-            spanish=verb_data.get("spanish"),
-            group=group_map.get(verb_data["group"], VerbGroup.FIRST),
-            is_irregular=verb_data.get("is_irregular", False),
-            auxiliary=aux_map.get(verb_data.get("auxiliary", "avoir"), Auxiliary.AVOIR),
-            past_participle=verb_data.get("past_participle"),
-            present_participle=verb_data.get("present_participle"),
-            notes=verb_data.get("notes"),
-            spanish_comparison=verb_data.get("spanish_comparison"),
-        )
-        db.add(verb)
-        db.flush()  # Get the verb ID
-        verb_count += 1
-
-        # Add conjugations
-        for conj_data in verb_data.get("conjugations", []):
-            conjugation = VerbConjugation(
-                verb_id=verb.id,
-                tense=conj_data["tense"],
-                mood=conj_data.get("mood", "indicatif"),
-                je=conj_data.get("je"),
-                tu=conj_data.get("tu"),
-                il_elle=conj_data.get("il_elle"),
-                nous=conj_data.get("nous"),
-                vous=conj_data.get("vous"),
-                ils_elles=conj_data.get("ils_elles"),
-                spanish_equivalent=conj_data.get("spanish_equivalent"),
-            )
-            db.add(conjugation)
-            conj_count += 1
-
-    db.commit()
-    print(f"  ✓ Seeded {verb_count} verbs with {conj_count} conjugations")
-
-
-def seed_grammar(db: Session, levels: dict[str, CEFRLevel]):
-    """Seed grammar topics."""
-    print("Seeding grammar...")
-    count = 0
-
-    a1_level = levels.get("A1")
-    if not a1_level:
-        print("  ✗ A1 level not found!")
-        return
-
-    for grammar_data in GRAMMAR_A1:
-        existing = db.query(Grammar).filter(
-            Grammar.topic == grammar_data["topic"],
-            Grammar.cefr_level_id == a1_level.id
-        ).first()
-
-        if existing:
-            continue
-
-        grammar = Grammar(
-            cefr_level_id=a1_level.id,
-            topic=grammar_data["topic"],
-            title=grammar_data["title"],
-            order=grammar_data.get("order", 0),
-            explanation_en=grammar_data["explanation_en"],
-            explanation_es=grammar_data.get("explanation_es"),
-            spanish_comparison=grammar_data.get("spanish_comparison"),
-            examples=grammar_data.get("examples", []),
-            common_mistakes=grammar_data.get("common_mistakes", []),
-            tips=grammar_data.get("tips", []),
-            related_topics=grammar_data.get("related_topics", []),
-        )
-        db.add(grammar)
-        count += 1
-
-    db.commit()
-    print(f"  ✓ Seeded {count} grammar topics")
-
-
-def seed_lessons(db: Session, levels: dict[str, CEFRLevel]):
-    """Seed lessons."""
-    print("Seeding lessons...")
-
-    a1_level = levels.get("A1")
-    if not a1_level:
-        print("  ✗ A1 level not found!")
-        return
-
-    a1_lessons = [
+# Lessons by level
+LESSONS_BY_LEVEL = {
+    "A1": [
         {
             "unit_number": 1,
             "title": "Bonjour! Introductions",
@@ -280,7 +123,7 @@ def seed_lessons(db: Session, levels: dict[str, CEFRLevel]):
         },
         {
             "unit_number": 5,
-            "title": "Où habites-tu?",
+            "title": "Ou habites-tu?",
             "description": "Talk about where you live and describe places.",
             "objectives": [
                 "Describe your home and neighborhood",
@@ -292,33 +135,547 @@ def seed_lessons(db: Session, levels: dict[str, CEFRLevel]):
             "grammar_topics": ["prepositions_place", "asking_questions"],
             "estimated_duration": 45
         },
-    ]
+    ],
+    "A2": [
+        {
+            "unit_number": 1,
+            "title": "Ma routine quotidienne",
+            "description": "Describe your daily routine and activities.",
+            "objectives": [
+                "Talk about daily activities",
+                "Use reflexive verbs",
+                "Tell time precisely",
+                "Use time expressions (d'abord, ensuite, puis)"
+            ],
+            "themes": ["daily_routines", "time", "activities"],
+            "grammar_topics": ["reflexive_verbs", "time_expressions"],
+            "estimated_duration": 45
+        },
+        {
+            "unit_number": 2,
+            "title": "Faire les courses",
+            "description": "Learn to shop and make purchases in French.",
+            "objectives": [
+                "Ask for prices and quantities",
+                "Use partitive articles (du, de la, des)",
+                "Express quantities with numbers",
+                "Describe food and products"
+            ],
+            "themes": ["shopping", "food", "quantities"],
+            "grammar_topics": ["partitive_articles", "quantities"],
+            "estimated_duration": 45
+        },
+        {
+            "unit_number": 3,
+            "title": "Les transports",
+            "description": "Navigate transportation and give directions.",
+            "objectives": [
+                "Ask for and give directions",
+                "Talk about different modes of transport",
+                "Use the imperative mood",
+                "Understand travel vocabulary"
+            ],
+            "themes": ["transportation", "directions", "travel"],
+            "grammar_topics": ["imperative", "prepositions_place"],
+            "estimated_duration": 45
+        },
+        {
+            "unit_number": 4,
+            "title": "Hier et aujourd'hui",
+            "description": "Talk about past events using passe compose.",
+            "objectives": [
+                "Narrate past events",
+                "Use passe compose with avoir",
+                "Form past participles",
+                "Use time markers for past"
+            ],
+            "themes": ["past", "events", "time"],
+            "grammar_topics": ["passe_compose_avoir", "past_participles"],
+            "estimated_duration": 45
+        },
+        {
+            "unit_number": 5,
+            "title": "Aller et venir",
+            "description": "Master movement verbs and passe compose with etre.",
+            "objectives": [
+                "Use movement verbs correctly",
+                "Apply passe compose with etre",
+                "Understand agreement rules",
+                "Describe trips and journeys"
+            ],
+            "themes": ["movement", "travel", "past"],
+            "grammar_topics": ["passe_compose_etre", "agreement"],
+            "estimated_duration": 45
+        },
+    ],
+    "B1": [
+        {
+            "unit_number": 1,
+            "title": "Le monde du travail",
+            "description": "Discuss work, careers, and professional life.",
+            "objectives": [
+                "Talk about jobs and careers",
+                "Use professional vocabulary",
+                "Write a simple CV or cover letter",
+                "Discuss work preferences and conditions"
+            ],
+            "themes": ["work", "career", "professional"],
+            "grammar_topics": ["futur_simple", "conditionnel_present"],
+            "estimated_duration": 50
+        },
+        {
+            "unit_number": 2,
+            "title": "Raconter des souvenirs",
+            "description": "Master the imperfect tense for memories and descriptions.",
+            "objectives": [
+                "Describe past habits and states",
+                "Use imparfait for descriptions",
+                "Contrast passe compose and imparfait",
+                "Tell childhood memories"
+            ],
+            "themes": ["memories", "past", "descriptions"],
+            "grammar_topics": ["imparfait", "passe_compose_vs_imparfait"],
+            "estimated_duration": 50
+        },
+        {
+            "unit_number": 3,
+            "title": "Exprimer des hypotheses",
+            "description": "Make hypotheses and express conditions.",
+            "objectives": [
+                "Form conditional sentences",
+                "Express wishes and regrets",
+                "Make polite requests",
+                "Use si + imparfait constructions"
+            ],
+            "themes": ["hypotheses", "conditions", "wishes"],
+            "grammar_topics": ["conditionnel_present", "si_clauses"],
+            "estimated_duration": 50
+        },
+        {
+            "unit_number": 4,
+            "title": "Relier ses idees",
+            "description": "Connect ideas using relative pronouns.",
+            "objectives": [
+                "Use qui, que, ou, dont correctly",
+                "Build complex sentences",
+                "Avoid repetition in speech",
+                "Describe people and things precisely"
+            ],
+            "themes": ["descriptions", "complex_sentences"],
+            "grammar_topics": ["pronoms_relatifs"],
+            "estimated_duration": 50
+        },
+        {
+            "unit_number": 5,
+            "title": "Exprimer la necessite",
+            "description": "Introduction to the subjunctive mood.",
+            "objectives": [
+                "Use il faut que + subjunctive",
+                "Express necessity and desire",
+                "Form basic subjunctive conjugations",
+                "Recognize subjunctive triggers"
+            ],
+            "themes": ["obligation", "necessity", "desire"],
+            "grammar_topics": ["subjonctif_introduction"],
+            "estimated_duration": 50
+        },
+    ],
+    "B2": [
+        {
+            "unit_number": 1,
+            "title": "Debattre et convaincre",
+            "description": "Present arguments and participate in debates.",
+            "objectives": [
+                "Express opinions strongly",
+                "Use advanced subjunctive triggers",
+                "Structure an argument",
+                "Respond to opposing viewpoints"
+            ],
+            "themes": ["debate", "opinion", "argumentation"],
+            "grammar_topics": ["subjonctif_advanced"],
+            "estimated_duration": 55
+        },
+        {
+            "unit_number": 2,
+            "title": "Le monde hypothetique",
+            "description": "Master past conditional and complex hypotheses.",
+            "objectives": [
+                "Express unreal past situations",
+                "Use si + plus-que-parfait",
+                "Express regret and criticism",
+                "Form complex conditional sentences"
+            ],
+            "themes": ["hypotheses", "regret", "past"],
+            "grammar_topics": ["conditionnel_passe", "plus_que_parfait"],
+            "estimated_duration": 55
+        },
+        {
+            "unit_number": 3,
+            "title": "La voix passive et causative",
+            "description": "Use passive voice and causative constructions.",
+            "objectives": [
+                "Transform active to passive",
+                "Use faire + infinitive",
+                "Describe processes",
+                "Discuss news and events objectively"
+            ],
+            "themes": ["media", "processes", "formal"],
+            "grammar_topics": ["passive_voice", "faire_causatif"],
+            "estimated_duration": 55
+        },
+        {
+            "unit_number": 4,
+            "title": "Nuancer son discours",
+            "description": "Add nuance and precision to your French.",
+            "objectives": [
+                "Use concession structures",
+                "Express opposition and contrast",
+                "Master discourse connectors",
+                "Write more sophisticated texts"
+            ],
+            "themes": ["nuance", "writing", "formal"],
+            "grammar_topics": ["mise_en_relief", "nominalisation"],
+            "estimated_duration": 55
+        },
+        {
+            "unit_number": 5,
+            "title": "Actions simultanees",
+            "description": "Express simultaneous actions with the gerondif.",
+            "objectives": [
+                "Form and use the gerondif",
+                "Express manner and condition",
+                "Describe processes",
+                "Use tout en + gerondif"
+            ],
+            "themes": ["actions", "processes", "manner"],
+            "grammar_topics": ["gerondif"],
+            "estimated_duration": 55
+        },
+    ],
+    "C1": [
+        {
+            "unit_number": 1,
+            "title": "Le francais litteraire",
+            "description": "Understand and appreciate literary French.",
+            "objectives": [
+                "Recognize passe simple in texts",
+                "Understand literary tenses",
+                "Analyze literary style",
+                "Read classic French literature excerpts"
+            ],
+            "themes": ["literature", "style", "reading"],
+            "grammar_topics": ["passe_simple"],
+            "estimated_duration": 60
+        },
+        {
+            "unit_number": 2,
+            "title": "Subjonctif avance",
+            "description": "Master all subjunctive tenses and uses.",
+            "objectives": [
+                "Use subjonctif passe fluently",
+                "Recognize subjonctif imparfait",
+                "Apply subjunctive in complex contexts",
+                "Express subtle emotions and doubts"
+            ],
+            "themes": ["emotions", "doubt", "formal"],
+            "grammar_topics": ["subjonctif_passe", "subjonctif_imparfait"],
+            "estimated_duration": 60
+        },
+        {
+            "unit_number": 3,
+            "title": "Le discours rapporte",
+            "description": "Master advanced reported speech.",
+            "objectives": [
+                "Report complex statements",
+                "Transform questions and commands",
+                "Apply all tense shifts",
+                "Summarize spoken content accurately"
+            ],
+            "themes": ["reporting", "media", "formal"],
+            "grammar_topics": ["discours_indirect_advanced"],
+            "estimated_duration": 60
+        },
+        {
+            "unit_number": 4,
+            "title": "Subtilites de la negation",
+            "description": "Use nuanced negative expressions.",
+            "objectives": [
+                "Use ne...guere, ne...nullement",
+                "Understand expletive ne",
+                "Express subtle negation",
+                "Write in elevated style"
+            ],
+            "themes": ["nuance", "style", "formal"],
+            "grammar_topics": ["negation_avancee"],
+            "estimated_duration": 60
+        },
+        {
+            "unit_number": 5,
+            "title": "L'argumentation ecrite",
+            "description": "Write sophisticated argumentative texts.",
+            "objectives": [
+                "Structure complex arguments",
+                "Use all concession structures",
+                "Master infinitif passe",
+                "Distinguish participle vs adjective"
+            ],
+            "themes": ["writing", "argumentation", "academic"],
+            "grammar_topics": ["concession_opposition", "infinitif_passe", "participe_present_adjectif_verbal"],
+            "estimated_duration": 60
+        },
+    ],
+}
 
-    count = 0
-    for lesson_data in a1_lessons:
-        existing = db.query(Lesson).filter(
-            Lesson.unit_number == lesson_data["unit_number"],
-            Lesson.cefr_level_id == a1_level.id
-        ).first()
 
+def seed_cefr_levels(db: Session) -> dict[str, CEFRLevel]:
+    """Seed CEFR levels and return a mapping of code to level."""
+    print("Seeding CEFR levels...")
+    levels = {}
+
+    for level_data in CEFR_LEVELS:
+        existing = db.query(CEFRLevel).filter(CEFRLevel.code == level_data["code"]).first()
         if existing:
+            levels[level_data["code"]] = existing
             continue
 
-        lesson = Lesson(
-            cefr_level_id=a1_level.id,
-            unit_number=lesson_data["unit_number"],
-            title=lesson_data["title"],
-            description=lesson_data["description"],
-            objectives=lesson_data["objectives"],
-            themes=lesson_data["themes"],
-            grammar_topics=lesson_data["grammar_topics"],
-            estimated_duration=lesson_data["estimated_duration"]
+        level = CEFRLevel(
+            code=level_data["code"],
+            name=level_data["name"],
+            order=level_data["order"],
+            af_levels=level_data["af_levels"],
+            vocabulary_target=level_data["vocabulary_target"],
+            description=level_data["description"]
         )
-        db.add(lesson)
-        count += 1
+        db.add(level)
+        levels[level_data["code"]] = level
 
     db.commit()
-    print(f"  ✓ Seeded {count} lessons")
+    print(f"  ✓ Seeded {len(CEFR_LEVELS)} CEFR levels")
+    return levels
+
+
+def seed_vocabulary(db: Session, levels: dict[str, CEFRLevel]):
+    """Seed vocabulary items for all levels."""
+    print("Seeding vocabulary...")
+    total_count = 0
+
+    # Map gender string to enum
+    gender_map = {"m": Gender.MASCULINE, "f": Gender.FEMININE, "-": Gender.NONE, "mf": Gender.BOTH}
+
+    # Map part of speech string to enum
+    pos_map = {
+        "noun": PartOfSpeech.NOUN,
+        "verb": PartOfSpeech.VERB,
+        "adjective": PartOfSpeech.ADJECTIVE,
+        "adverb": PartOfSpeech.ADVERB,
+        "pronoun": PartOfSpeech.PRONOUN,
+        "preposition": PartOfSpeech.PREPOSITION,
+        "conjunction": PartOfSpeech.CONJUNCTION,
+        "interjection": PartOfSpeech.INTERJECTION,
+        "article": PartOfSpeech.ARTICLE,
+        "phrase": PartOfSpeech.PHRASE,
+    }
+
+    for level_code, vocab_list in VOCABULARY_BY_LEVEL.items():
+        level = levels.get(level_code)
+        if not level:
+            print(f"  ✗ {level_code} level not found!")
+            continue
+
+        count = 0
+        for vocab_data in vocab_list:
+            existing = db.query(Vocabulary).filter(
+                Vocabulary.french == vocab_data["french"],
+                Vocabulary.cefr_level_id == level.id
+            ).first()
+
+            if existing:
+                continue
+
+            gender = gender_map.get(vocab_data.get("gender", "-"), Gender.NONE)
+            part_of_speech = pos_map.get(vocab_data.get("part_of_speech", "noun"), PartOfSpeech.NOUN)
+
+            vocab = Vocabulary(
+                cefr_level_id=level.id,
+                french=vocab_data["french"],
+                english=vocab_data["english"],
+                spanish=vocab_data.get("spanish"),
+                gender=gender,
+                part_of_speech=part_of_speech,
+                phonetic=vocab_data.get("phonetic"),
+                is_cognate=vocab_data.get("is_cognate", False),
+                cognate_spanish=vocab_data.get("cognate_spanish"),
+                cognate_note=vocab_data.get("cognate_note"),
+                is_false_friend=vocab_data.get("is_false_friend", False),
+                category=vocab_data.get("category"),
+                example_french=vocab_data.get("example_french"),
+                example_english=vocab_data.get("example_english"),
+                example_spanish=vocab_data.get("example_spanish"),
+                notes=vocab_data.get("notes"),
+            )
+            db.add(vocab)
+            count += 1
+
+        total_count += count
+        print(f"    - {level_code}: {count} items")
+
+    db.commit()
+    print(f"  ✓ Seeded {total_count} vocabulary items total")
+
+
+def seed_verbs(db: Session, levels: dict[str, CEFRLevel]):
+    """Seed verbs and their conjugations for all levels."""
+    print("Seeding verbs...")
+    total_verb_count = 0
+    total_conj_count = 0
+
+    # Map group and auxiliary to enums
+    group_map = {1: VerbGroup.FIRST, 2: VerbGroup.SECOND, 3: VerbGroup.THIRD}
+    aux_map = {"avoir": Auxiliary.AVOIR, "être": Auxiliary.ETRE}
+
+    for level_code, verb_list in VERBS_BY_LEVEL.items():
+        level = levels.get(level_code)
+        if not level:
+            print(f"  ✗ {level_code} level not found!")
+            continue
+
+        verb_count = 0
+        conj_count = 0
+
+        for verb_data in verb_list:
+            existing = db.query(Verb).filter(
+                Verb.infinitive == verb_data["infinitive"],
+                Verb.cefr_level_id == level.id
+            ).first()
+
+            if existing:
+                continue
+
+            verb = Verb(
+                cefr_level_id=level.id,
+                infinitive=verb_data["infinitive"],
+                english=verb_data["english"],
+                spanish=verb_data.get("spanish"),
+                group=group_map.get(verb_data["group"], VerbGroup.FIRST),
+                is_irregular=verb_data.get("is_irregular", False),
+                auxiliary=aux_map.get(verb_data.get("auxiliary", "avoir"), Auxiliary.AVOIR),
+                past_participle=verb_data.get("past_participle"),
+                present_participle=verb_data.get("present_participle"),
+                notes=verb_data.get("notes"),
+                spanish_comparison=verb_data.get("spanish_comparison"),
+            )
+            db.add(verb)
+            db.flush()  # Get the verb ID
+            verb_count += 1
+
+            # Add conjugations
+            for conj_data in verb_data.get("conjugations", []):
+                conjugation = VerbConjugation(
+                    verb_id=verb.id,
+                    tense=conj_data["tense"],
+                    mood=conj_data.get("mood", "indicatif"),
+                    je=conj_data.get("je"),
+                    tu=conj_data.get("tu"),
+                    il_elle=conj_data.get("il_elle"),
+                    nous=conj_data.get("nous"),
+                    vous=conj_data.get("vous"),
+                    ils_elles=conj_data.get("ils_elles"),
+                    spanish_equivalent=conj_data.get("spanish_equivalent"),
+                )
+                db.add(conjugation)
+                conj_count += 1
+
+        total_verb_count += verb_count
+        total_conj_count += conj_count
+        print(f"    - {level_code}: {verb_count} verbs, {conj_count} conjugations")
+
+    db.commit()
+    print(f"  ✓ Seeded {total_verb_count} verbs with {total_conj_count} conjugations total")
+
+
+def seed_grammar(db: Session, levels: dict[str, CEFRLevel]):
+    """Seed grammar topics for all levels."""
+    print("Seeding grammar...")
+    total_count = 0
+
+    for level_code, grammar_list in GRAMMAR_BY_LEVEL.items():
+        level = levels.get(level_code)
+        if not level:
+            print(f"  ✗ {level_code} level not found!")
+            continue
+
+        count = 0
+        for grammar_data in grammar_list:
+            existing = db.query(Grammar).filter(
+                Grammar.topic == grammar_data["topic"],
+                Grammar.cefr_level_id == level.id
+            ).first()
+
+            if existing:
+                continue
+
+            grammar = Grammar(
+                cefr_level_id=level.id,
+                topic=grammar_data["topic"],
+                title=grammar_data["title"],
+                order=grammar_data.get("order", 0),
+                explanation_en=grammar_data["explanation_en"],
+                explanation_es=grammar_data.get("explanation_es"),
+                spanish_comparison=grammar_data.get("spanish_comparison"),
+                examples=grammar_data.get("examples", []),
+                common_mistakes=grammar_data.get("common_mistakes", []),
+                tips=grammar_data.get("tips", []),
+                related_topics=grammar_data.get("related_topics", []),
+            )
+            db.add(grammar)
+            count += 1
+
+        total_count += count
+        print(f"    - {level_code}: {count} topics")
+
+    db.commit()
+    print(f"  ✓ Seeded {total_count} grammar topics total")
+
+
+def seed_lessons(db: Session, levels: dict[str, CEFRLevel]):
+    """Seed lessons for all levels."""
+    print("Seeding lessons...")
+    total_count = 0
+
+    for level_code, lessons_list in LESSONS_BY_LEVEL.items():
+        level = levels.get(level_code)
+        if not level:
+            print(f"  ✗ {level_code} level not found!")
+            continue
+
+        count = 0
+        for lesson_data in lessons_list:
+            existing = db.query(Lesson).filter(
+                Lesson.unit_number == lesson_data["unit_number"],
+                Lesson.cefr_level_id == level.id
+            ).first()
+
+            if existing:
+                continue
+
+            lesson = Lesson(
+                cefr_level_id=level.id,
+                unit_number=lesson_data["unit_number"],
+                title=lesson_data["title"],
+                description=lesson_data["description"],
+                objectives=lesson_data["objectives"],
+                themes=lesson_data["themes"],
+                grammar_topics=lesson_data["grammar_topics"],
+                estimated_duration=lesson_data["estimated_duration"]
+            )
+            db.add(lesson)
+            count += 1
+
+        total_count += count
+        print(f"    - {level_code}: {count} lessons")
+
+    db.commit()
+    print(f"  ✓ Seeded {total_count} lessons total")
 
 
 def seed_default_user(db: Session):
@@ -353,7 +710,7 @@ def seed_default_user(db: Session):
 def main():
     """Main seeding function."""
     print("\n" + "=" * 50)
-    print("🇫🇷 FrenchFlow Database Seeding")
+    print("FrenchFlow Database Seeding")
     print("=" * 50 + "\n")
 
     # Initialize database
@@ -374,7 +731,7 @@ def main():
         seed_default_user(db)
 
         print("\n" + "=" * 50)
-        print("✅ Database seeding complete!")
+        print("Database seeding complete!")
         print("=" * 50 + "\n")
 
         # Print summary
@@ -389,7 +746,7 @@ def main():
         print()
 
     except Exception as e:
-        print(f"\n❌ Error during seeding: {e}")
+        print(f"\n Error during seeding: {e}")
         db.rollback()
         raise
     finally:
