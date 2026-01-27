@@ -5,50 +5,7 @@ Focus on more complex tenses: imparfait, futur simple, conditionnel
 """
 
 VERBS_B1 = [
-    # Professional/Work verbs
-    {
-        "infinitive": "travailler",
-        "english": "to work",
-        "spanish": "trabajar",
-        "group": 1,
-        "is_irregular": False,
-        "spanish_comparison": "Very similar conjugation pattern to Spanish 'trabajar'",
-        "conjugations": [
-            {
-                "tense": "present",
-                "mood": "indicative",
-                "je": "travaille",
-                "tu": "travailles",
-                "il_elle": "travaille",
-                "nous": "travaillons",
-                "vous": "travaillez",
-                "ils_elles": "travaillent",
-                "spanish_equivalent": "trabajo, trabajas, trabaja, trabajamos, trabajáis, trabajan"
-            },
-            {
-                "tense": "imparfait",
-                "mood": "indicative",
-                "je": "travaillais",
-                "tu": "travaillais",
-                "il_elle": "travaillait",
-                "nous": "travaillions",
-                "vous": "travailliez",
-                "ils_elles": "travaillaient",
-                "spanish_equivalent": "trabajaba, trabajabas, trabajaba, trabajábamos, trabajabais, trabajaban"
-            },
-            {
-                "tense": "futur_simple",
-                "mood": "indicative",
-                "je": "travaillerai",
-                "tu": "travailleras",
-                "il_elle": "travaillera",
-                "nous": "travaillerons",
-                "vous": "travaillerez",
-                "ils_elles": "travailleront",
-                "spanish_equivalent": "trabajaré, trabajarás, trabajará, trabajaremos, trabajaréis, trabajarán"
-            }
-        ]
-    },
+    # Note: travailler is already defined in A1
     {
         "infinitive": "réussir",
         "english": "to succeed/pass",

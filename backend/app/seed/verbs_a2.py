@@ -5,36 +5,7 @@ Focus on passé composé, imparfait introduction, and more irregular verbs
 """
 
 VERBS_A2 = [
-    {
-        "infinitive": "venir",
-        "english": "to come",
-        "spanish": "venir",
-        "group": 3,
-        "is_irregular": True,
-        "auxiliary": "être",
-        "past_participle": "venu",
-        "present_participle": "venant",
-        "spanish_comparison": "Like Spanish 'venir', uses être as auxiliary in passé composé",
-        "conjugations": [
-            {"tense": "présent", "mood": "indicatif", "je": "viens", "tu": "viens", "il_elle": "vient", "nous": "venons", "vous": "venez", "ils_elles": "viennent", "spanish_equivalent": "vengo, vienes, viene..."},
-            {"tense": "passé_composé", "mood": "indicatif", "je": "suis venu(e)", "tu": "es venu(e)", "il_elle": "est venu(e)", "nous": "sommes venu(e)s", "vous": "êtes venu(e)(s)", "ils_elles": "sont venu(e)s"},
-        ]
-    },
-    {
-        "infinitive": "prendre",
-        "english": "to take",
-        "spanish": "tomar/coger",
-        "group": 3,
-        "is_irregular": True,
-        "auxiliary": "avoir",
-        "past_participle": "pris",
-        "present_participle": "prenant",
-        "spanish_comparison": "Unlike Spanish 'tomar', prendre has an irregular conjugation pattern",
-        "conjugations": [
-            {"tense": "présent", "mood": "indicatif", "je": "prends", "tu": "prends", "il_elle": "prend", "nous": "prenons", "vous": "prenez", "ils_elles": "prennent"},
-            {"tense": "passé_composé", "mood": "indicatif", "je": "ai pris", "tu": "as pris", "il_elle": "a pris", "nous": "avons pris", "vous": "avez pris", "ils_elles": "ont pris"},
-        ]
-    },
+    # Note: venir, prendre, savoir, devoir are already defined in A1
     {
         "infinitive": "mettre",
         "english": "to put/to wear",
@@ -111,21 +82,6 @@ VERBS_A2 = [
         ]
     },
     {
-        "infinitive": "savoir",
-        "english": "to know (facts)",
-        "spanish": "saber",
-        "group": 3,
-        "is_irregular": True,
-        "auxiliary": "avoir",
-        "past_participle": "su",
-        "present_participle": "sachant",
-        "spanish_comparison": "Like Spanish 'saber' vs 'conocer', French has 'savoir' vs 'connaître'",
-        "conjugations": [
-            {"tense": "présent", "mood": "indicatif", "je": "sais", "tu": "sais", "il_elle": "sait", "nous": "savons", "vous": "savez", "ils_elles": "savent"},
-            {"tense": "passé_composé", "mood": "indicatif", "je": "ai su", "tu": "as su", "il_elle": "a su", "nous": "avons su", "vous": "avez su", "ils_elles": "ont su"},
-        ]
-    },
-    {
         "infinitive": "connaître",
         "english": "to know (people/places)",
         "spanish": "conocer",
@@ -138,21 +94,6 @@ VERBS_A2 = [
         "conjugations": [
             {"tense": "présent", "mood": "indicatif", "je": "connais", "tu": "connais", "il_elle": "connaît", "nous": "connaissons", "vous": "connaissez", "ils_elles": "connaissent"},
             {"tense": "passé_composé", "mood": "indicatif", "je": "ai connu", "tu": "as connu", "il_elle": "a connu", "nous": "avons connu", "vous": "avez connu", "ils_elles": "ont connu"},
-        ]
-    },
-    {
-        "infinitive": "devoir",
-        "english": "to have to/must",
-        "spanish": "deber",
-        "group": 3,
-        "is_irregular": True,
-        "auxiliary": "avoir",
-        "past_participle": "dû",
-        "present_participle": "devant",
-        "spanish_comparison": "Like Spanish 'deber' - expresses obligation",
-        "conjugations": [
-            {"tense": "présent", "mood": "indicatif", "je": "dois", "tu": "dois", "il_elle": "doit", "nous": "devons", "vous": "devez", "ils_elles": "doivent"},
-            {"tense": "passé_composé", "mood": "indicatif", "je": "ai dû", "tu": "as dû", "il_elle": "a dû", "nous": "avons dû", "vous": "avez dû", "ils_elles": "ont dû"},
         ]
     },
 ]
