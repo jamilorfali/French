@@ -232,12 +232,17 @@ export default function Practice() {
               <div className="mt-6">
                 {hasOptions() && (
                   <div className="space-y-2">
-                    {(exercise.content?.options as string[]).map((option, idx) => (
-                      <button key={idx} onClick={() => setUserAnswer(idx)}
-                        className={`w-full p-4 text-left rounded-lg flex items-center gap-3 transition-colors ${userAnswer === idx ? 'bg-blue-100 border-2 border-blue-500 text-blue-900' : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'}`}>
-                        <span className="font-medium">{String.fromCharCode(65 + idx)}.</span> {option}
-                      </button>
-                    ))}
+                    {(exercise.content?.options as string[]).map((option, idx) => {
+                      // For gender exercises, use the actual option value; for others, use index
+                      const answerValue = exercise.type === 'gender' ? option : idx;
+                      const isSelected = exercise.type === 'gender' ? userAnswer === option : userAnswer === idx;
+                      return (
+                        <button key={idx} onClick={() => setUserAnswer(answerValue)}
+                          className={`w-full p-4 text-left rounded-lg flex items-center gap-3 transition-colors ${isSelected ? 'bg-blue-100 border-2 border-blue-500 text-blue-900' : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'}`}>
+                          <span className="font-medium">{String.fromCharCode(65 + idx)}.</span> {option}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
 
