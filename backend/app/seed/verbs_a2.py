@@ -5,7 +5,6 @@ Focus on passé composé, imparfait introduction, and more irregular verbs
 """
 
 VERBS_A2 = [
-    # Note: venir, prendre, savoir, devoir are already defined in A1
     {
         "infinitive": "mettre",
         "english": "to put/to wear",
@@ -19,6 +18,8 @@ VERBS_A2 = [
         "conjugations": [
             {"tense": "présent", "mood": "indicatif", "je": "mets", "tu": "mets", "il_elle": "met", "nous": "mettons", "vous": "mettez", "ils_elles": "mettent"},
             {"tense": "passé_composé", "mood": "indicatif", "je": "ai mis", "tu": "as mis", "il_elle": "a mis", "nous": "avons mis", "vous": "avez mis", "ils_elles": "ont mis"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "mettais", "tu": "mettais", "il_elle": "mettait", "nous": "mettions", "vous": "mettiez", "ils_elles": "mettaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "mettrai", "tu": "mettras", "il_elle": "mettra", "nous": "mettrons", "vous": "mettrez", "ils_elles": "mettront"},
         ]
     },
     {
@@ -34,6 +35,8 @@ VERBS_A2 = [
         "conjugations": [
             {"tense": "présent", "mood": "indicatif", "je": "pars", "tu": "pars", "il_elle": "part", "nous": "partons", "vous": "partez", "ils_elles": "partent"},
             {"tense": "passé_composé", "mood": "indicatif", "je": "suis parti(e)", "tu": "es parti(e)", "il_elle": "est parti(e)", "nous": "sommes parti(e)s", "vous": "êtes parti(e)(s)", "ils_elles": "sont parti(e)s"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "partais", "tu": "partais", "il_elle": "partait", "nous": "partions", "vous": "partiez", "ils_elles": "partaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "partirai", "tu": "partiras", "il_elle": "partira", "nous": "partirons", "vous": "partirez", "ils_elles": "partiront"},
         ]
     },
     {
@@ -49,6 +52,8 @@ VERBS_A2 = [
         "conjugations": [
             {"tense": "présent", "mood": "indicatif", "je": "sors", "tu": "sors", "il_elle": "sort", "nous": "sortons", "vous": "sortez", "ils_elles": "sortent"},
             {"tense": "passé_composé", "mood": "indicatif", "je": "suis sorti(e)", "tu": "es sorti(e)", "il_elle": "est sorti(e)", "nous": "sommes sorti(e)s", "vous": "êtes sorti(e)(s)", "ils_elles": "sont sorti(e)s"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "sortais", "tu": "sortais", "il_elle": "sortait", "nous": "sortions", "vous": "sortiez", "ils_elles": "sortaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "sortirai", "tu": "sortiras", "il_elle": "sortira", "nous": "sortirons", "vous": "sortirez", "ils_elles": "sortiront"},
         ]
     },
     {
@@ -64,6 +69,8 @@ VERBS_A2 = [
         "conjugations": [
             {"tense": "présent", "mood": "indicatif", "je": "dors", "tu": "dors", "il_elle": "dort", "nous": "dormons", "vous": "dormez", "ils_elles": "dorment"},
             {"tense": "passé_composé", "mood": "indicatif", "je": "ai dormi", "tu": "as dormi", "il_elle": "a dormi", "nous": "avons dormi", "vous": "avez dormi", "ils_elles": "ont dormi"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "dormais", "tu": "dormais", "il_elle": "dormait", "nous": "dormions", "vous": "dormiez", "ils_elles": "dormaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "dormirai", "tu": "dormiras", "il_elle": "dormira", "nous": "dormirons", "vous": "dormirez", "ils_elles": "dormiront"},
         ]
     },
     {
@@ -79,6 +86,8 @@ VERBS_A2 = [
         "conjugations": [
             {"tense": "présent", "mood": "indicatif", "je": "vois", "tu": "vois", "il_elle": "voit", "nous": "voyons", "vous": "voyez", "ils_elles": "voient"},
             {"tense": "passé_composé", "mood": "indicatif", "je": "ai vu", "tu": "as vu", "il_elle": "a vu", "nous": "avons vu", "vous": "avez vu", "ils_elles": "ont vu"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "voyais", "tu": "voyais", "il_elle": "voyait", "nous": "voyions", "vous": "voyiez", "ils_elles": "voyaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "verrai", "tu": "verras", "il_elle": "verra", "nous": "verrons", "vous": "verrez", "ils_elles": "verront"},
         ]
     },
     {
@@ -94,6 +103,331 @@ VERBS_A2 = [
         "conjugations": [
             {"tense": "présent", "mood": "indicatif", "je": "connais", "tu": "connais", "il_elle": "connaît", "nous": "connaissons", "vous": "connaissez", "ils_elles": "connaissent"},
             {"tense": "passé_composé", "mood": "indicatif", "je": "ai connu", "tu": "as connu", "il_elle": "a connu", "nous": "avons connu", "vous": "avez connu", "ils_elles": "ont connu"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "connaissais", "tu": "connaissais", "il_elle": "connaissait", "nous": "connaissions", "vous": "connaissiez", "ils_elles": "connaissaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "connaîtrai", "tu": "connaîtras", "il_elle": "connaîtra", "nous": "connaîtrons", "vous": "connaîtrez", "ils_elles": "connaîtront"},
+        ]
+    },
+    {
+        "infinitive": "attendre",
+        "english": "to wait",
+        "spanish": "esperar",
+        "group": 3,
+        "is_irregular": False,
+        "auxiliary": "avoir",
+        "past_participle": "attendu",
+        "present_participle": "attendant",
+        "spanish_comparison": "Regular -RE verb. Similar meaning to Spanish 'esperar'",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "attends", "tu": "attends", "il_elle": "attend", "nous": "attendons", "vous": "attendez", "ils_elles": "attendent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "ai attendu", "tu": "as attendu", "il_elle": "a attendu", "nous": "avons attendu", "vous": "avez attendu", "ils_elles": "ont attendu"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "attendais", "tu": "attendais", "il_elle": "attendait", "nous": "attendions", "vous": "attendiez", "ils_elles": "attendaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "attendrai", "tu": "attendras", "il_elle": "attendra", "nous": "attendrons", "vous": "attendrez", "ils_elles": "attendront"},
+        ]
+    },
+    {
+        "infinitive": "répondre",
+        "english": "to answer",
+        "spanish": "responder",
+        "group": 3,
+        "is_irregular": False,
+        "auxiliary": "avoir",
+        "past_participle": "répondu",
+        "present_participle": "répondant",
+        "spanish_comparison": "Cognate with Spanish 'responder'",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "réponds", "tu": "réponds", "il_elle": "répond", "nous": "répondons", "vous": "répondez", "ils_elles": "répondent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "ai répondu", "tu": "as répondu", "il_elle": "a répondu", "nous": "avons répondu", "vous": "avez répondu", "ils_elles": "ont répondu"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "répondais", "tu": "répondais", "il_elle": "répondait", "nous": "répondions", "vous": "répondiez", "ils_elles": "répondaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "répondrai", "tu": "répondras", "il_elle": "répondra", "nous": "répondrons", "vous": "répondrez", "ils_elles": "répondront"},
+        ]
+    },
+    {
+        "infinitive": "entendre",
+        "english": "to hear",
+        "spanish": "oír/entender",
+        "group": 3,
+        "is_irregular": False,
+        "auxiliary": "avoir",
+        "past_participle": "entendu",
+        "present_participle": "entendant",
+        "spanish_comparison": "False friend! French 'entendre' = to hear, not 'to understand'",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "entends", "tu": "entends", "il_elle": "entend", "nous": "entendons", "vous": "entendez", "ils_elles": "entendent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "ai entendu", "tu": "as entendu", "il_elle": "a entendu", "nous": "avons entendu", "vous": "avez entendu", "ils_elles": "ont entendu"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "entendais", "tu": "entendais", "il_elle": "entendait", "nous": "entendions", "vous": "entendiez", "ils_elles": "entendaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "entendrai", "tu": "entendras", "il_elle": "entendra", "nous": "entendrons", "vous": "entendrez", "ils_elles": "entendront"},
+        ]
+    },
+    {
+        "infinitive": "perdre",
+        "english": "to lose",
+        "spanish": "perder",
+        "group": 3,
+        "is_irregular": False,
+        "auxiliary": "avoir",
+        "past_participle": "perdu",
+        "present_participle": "perdant",
+        "spanish_comparison": "Cognate with Spanish 'perder'",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "perds", "tu": "perds", "il_elle": "perd", "nous": "perdons", "vous": "perdez", "ils_elles": "perdent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "ai perdu", "tu": "as perdu", "il_elle": "a perdu", "nous": "avons perdu", "vous": "avez perdu", "ils_elles": "ont perdu"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "perdais", "tu": "perdais", "il_elle": "perdait", "nous": "perdions", "vous": "perdiez", "ils_elles": "perdaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "perdrai", "tu": "perdras", "il_elle": "perdra", "nous": "perdrons", "vous": "perdrez", "ils_elles": "perdront"},
+        ]
+    },
+    {
+        "infinitive": "descendre",
+        "english": "to go down/descend",
+        "spanish": "descender/bajar",
+        "group": 3,
+        "is_irregular": False,
+        "auxiliary": "être",
+        "past_participle": "descendu",
+        "present_participle": "descendant",
+        "spanish_comparison": "Cognate with Spanish 'descender'. Uses être when intransitive.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "descends", "tu": "descends", "il_elle": "descend", "nous": "descendons", "vous": "descendez", "ils_elles": "descendent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "suis descendu(e)", "tu": "es descendu(e)", "il_elle": "est descendu(e)", "nous": "sommes descendu(e)s", "vous": "êtes descendu(e)(s)", "ils_elles": "sont descendu(e)s"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "descendais", "tu": "descendais", "il_elle": "descendait", "nous": "descendions", "vous": "descendiez", "ils_elles": "descendaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "descendrai", "tu": "descendras", "il_elle": "descendra", "nous": "descendrons", "vous": "descendrez", "ils_elles": "descendront"},
+        ]
+    },
+    {
+        "infinitive": "monter",
+        "english": "to go up/climb",
+        "spanish": "subir/montar",
+        "group": 1,
+        "is_irregular": False,
+        "auxiliary": "être",
+        "past_participle": "monté",
+        "present_participle": "montant",
+        "spanish_comparison": "Related to Spanish 'montar'. Uses être when intransitive.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "monte", "tu": "montes", "il_elle": "monte", "nous": "montons", "vous": "montez", "ils_elles": "montent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "suis monté(e)", "tu": "es monté(e)", "il_elle": "est monté(e)", "nous": "sommes monté(e)s", "vous": "êtes monté(e)(s)", "ils_elles": "sont monté(e)s"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "montais", "tu": "montais", "il_elle": "montait", "nous": "montions", "vous": "montiez", "ils_elles": "montaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "monterai", "tu": "monteras", "il_elle": "montera", "nous": "monterons", "vous": "monterez", "ils_elles": "monteront"},
+        ]
+    },
+    {
+        "infinitive": "rentrer",
+        "english": "to return/go back in",
+        "spanish": "regresar/volver",
+        "group": 1,
+        "is_irregular": False,
+        "auxiliary": "être",
+        "past_participle": "rentré",
+        "present_participle": "rentrant",
+        "spanish_comparison": "DR MRS VANDERTRAMP verb. Uses être in passé composé.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "rentre", "tu": "rentres", "il_elle": "rentre", "nous": "rentrons", "vous": "rentrez", "ils_elles": "rentrent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "suis rentré(e)", "tu": "es rentré(e)", "il_elle": "est rentré(e)", "nous": "sommes rentré(e)s", "vous": "êtes rentré(e)(s)", "ils_elles": "sont rentré(e)s"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "rentrais", "tu": "rentrais", "il_elle": "rentrait", "nous": "rentrions", "vous": "rentriez", "ils_elles": "rentraient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "rentrerai", "tu": "rentreras", "il_elle": "rentrera", "nous": "rentrerons", "vous": "rentrerez", "ils_elles": "rentreront"},
+        ]
+    },
+    {
+        "infinitive": "tomber",
+        "english": "to fall",
+        "spanish": "caer",
+        "group": 1,
+        "is_irregular": False,
+        "auxiliary": "être",
+        "past_participle": "tombé",
+        "present_participle": "tombant",
+        "spanish_comparison": "DR MRS VANDERTRAMP verb. Uses être in passé composé.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "tombe", "tu": "tombes", "il_elle": "tombe", "nous": "tombons", "vous": "tombez", "ils_elles": "tombent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "suis tombé(e)", "tu": "es tombé(e)", "il_elle": "est tombé(e)", "nous": "sommes tombé(e)s", "vous": "êtes tombé(e)(s)", "ils_elles": "sont tombé(e)s"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "tombais", "tu": "tombais", "il_elle": "tombait", "nous": "tombions", "vous": "tombiez", "ils_elles": "tombaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "tomberai", "tu": "tomberas", "il_elle": "tombera", "nous": "tomberons", "vous": "tomberez", "ils_elles": "tomberont"},
+        ]
+    },
+    {
+        "infinitive": "rester",
+        "english": "to stay/remain",
+        "spanish": "quedarse",
+        "group": 1,
+        "is_irregular": False,
+        "auxiliary": "être",
+        "past_participle": "resté",
+        "present_participle": "restant",
+        "spanish_comparison": "DR MRS VANDERTRAMP verb. Uses être in passé composé.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "reste", "tu": "restes", "il_elle": "reste", "nous": "restons", "vous": "restez", "ils_elles": "restent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "suis resté(e)", "tu": "es resté(e)", "il_elle": "est resté(e)", "nous": "sommes resté(e)s", "vous": "êtes resté(e)(s)", "ils_elles": "sont resté(e)s"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "restais", "tu": "restais", "il_elle": "restait", "nous": "restions", "vous": "restiez", "ils_elles": "restaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "resterai", "tu": "resteras", "il_elle": "restera", "nous": "resterons", "vous": "resterez", "ils_elles": "resteront"},
+        ]
+    },
+    {
+        "infinitive": "retourner",
+        "english": "to return/go back",
+        "spanish": "volver/regresar",
+        "group": 1,
+        "is_irregular": False,
+        "auxiliary": "être",
+        "past_participle": "retourné",
+        "present_participle": "retournant",
+        "spanish_comparison": "DR MRS VANDERTRAMP verb. Uses être in passé composé.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "retourne", "tu": "retournes", "il_elle": "retourne", "nous": "retournons", "vous": "retournez", "ils_elles": "retournent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "suis retourné(e)", "tu": "es retourné(e)", "il_elle": "est retourné(e)", "nous": "sommes retourné(e)s", "vous": "êtes retourné(e)(s)", "ils_elles": "sont retourné(e)s"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "retournais", "tu": "retournais", "il_elle": "retournait", "nous": "retournions", "vous": "retourniez", "ils_elles": "retournaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "retournerai", "tu": "retourneras", "il_elle": "retournera", "nous": "retournerons", "vous": "retournerez", "ils_elles": "retourneront"},
+        ]
+    },
+    {
+        "infinitive": "entrer",
+        "english": "to enter",
+        "spanish": "entrar",
+        "group": 1,
+        "is_irregular": False,
+        "auxiliary": "être",
+        "past_participle": "entré",
+        "present_participle": "entrant",
+        "spanish_comparison": "Cognate with Spanish 'entrar'. Uses être in passé composé.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "entre", "tu": "entres", "il_elle": "entre", "nous": "entrons", "vous": "entrez", "ils_elles": "entrent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "suis entré(e)", "tu": "es entré(e)", "il_elle": "est entré(e)", "nous": "sommes entré(e)s", "vous": "êtes entré(e)(s)", "ils_elles": "sont entré(e)s"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "entrais", "tu": "entrais", "il_elle": "entrait", "nous": "entrions", "vous": "entriez", "ils_elles": "entraient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "entrerai", "tu": "entreras", "il_elle": "entrera", "nous": "entrerons", "vous": "entrerez", "ils_elles": "entreront"},
+        ]
+    },
+    {
+        "infinitive": "passer",
+        "english": "to pass/spend time",
+        "spanish": "pasar",
+        "group": 1,
+        "is_irregular": False,
+        "auxiliary": "avoir",
+        "past_participle": "passé",
+        "present_participle": "passant",
+        "spanish_comparison": "Cognate with Spanish 'pasar'. Usually uses avoir.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "passe", "tu": "passes", "il_elle": "passe", "nous": "passons", "vous": "passez", "ils_elles": "passent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "ai passé", "tu": "as passé", "il_elle": "a passé", "nous": "avons passé", "vous": "avez passé", "ils_elles": "ont passé"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "passais", "tu": "passais", "il_elle": "passait", "nous": "passions", "vous": "passiez", "ils_elles": "passaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "passerai", "tu": "passeras", "il_elle": "passera", "nous": "passerons", "vous": "passerez", "ils_elles": "passeront"},
+        ]
+    },
+    {
+        "infinitive": "essayer",
+        "english": "to try",
+        "spanish": "intentar/probar",
+        "group": 1,
+        "is_irregular": False,
+        "auxiliary": "avoir",
+        "past_participle": "essayé",
+        "present_participle": "essayant",
+        "spanish_comparison": "Y changes to I before mute E in some forms",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "essaie", "tu": "essaies", "il_elle": "essaie", "nous": "essayons", "vous": "essayez", "ils_elles": "essaient"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "ai essayé", "tu": "as essayé", "il_elle": "a essayé", "nous": "avons essayé", "vous": "avez essayé", "ils_elles": "ont essayé"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "essayais", "tu": "essayais", "il_elle": "essayait", "nous": "essayions", "vous": "essayiez", "ils_elles": "essayaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "essaierai", "tu": "essaieras", "il_elle": "essaiera", "nous": "essaierons", "vous": "essaierez", "ils_elles": "essaieront"},
+        ]
+    },
+    {
+        "infinitive": "payer",
+        "english": "to pay",
+        "spanish": "pagar",
+        "group": 1,
+        "is_irregular": False,
+        "auxiliary": "avoir",
+        "past_participle": "payé",
+        "present_participle": "payant",
+        "spanish_comparison": "Cognate with Spanish 'pagar'. Y changes to I in some forms.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "paie", "tu": "paies", "il_elle": "paie", "nous": "payons", "vous": "payez", "ils_elles": "paient"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "ai payé", "tu": "as payé", "il_elle": "a payé", "nous": "avons payé", "vous": "avez payé", "ils_elles": "ont payé"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "payais", "tu": "payais", "il_elle": "payait", "nous": "payions", "vous": "payiez", "ils_elles": "payaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "paierai", "tu": "paieras", "il_elle": "paiera", "nous": "paierons", "vous": "paierez", "ils_elles": "paieront"},
+        ]
+    },
+    {
+        "infinitive": "envoyer",
+        "english": "to send",
+        "spanish": "enviar",
+        "group": 1,
+        "is_irregular": True,
+        "auxiliary": "avoir",
+        "past_participle": "envoyé",
+        "present_participle": "envoyant",
+        "spanish_comparison": "Cognate with Spanish 'enviar'. Irregular future stem.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "envoie", "tu": "envoies", "il_elle": "envoie", "nous": "envoyons", "vous": "envoyez", "ils_elles": "envoient"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "ai envoyé", "tu": "as envoyé", "il_elle": "a envoyé", "nous": "avons envoyé", "vous": "avez envoyé", "ils_elles": "ont envoyé"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "envoyais", "tu": "envoyais", "il_elle": "envoyait", "nous": "envoyions", "vous": "envoyiez", "ils_elles": "envoyaient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "enverrai", "tu": "enverras", "il_elle": "enverra", "nous": "enverrons", "vous": "enverrez", "ils_elles": "enverront"},
+        ]
+    },
+    {
+        "infinitive": "ouvrir",
+        "english": "to open",
+        "spanish": "abrir",
+        "group": 3,
+        "is_irregular": True,
+        "auxiliary": "avoir",
+        "past_participle": "ouvert",
+        "present_participle": "ouvrant",
+        "spanish_comparison": "Conjugates like -ER verb in present. Past participle is irregular.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "ouvre", "tu": "ouvres", "il_elle": "ouvre", "nous": "ouvrons", "vous": "ouvrez", "ils_elles": "ouvrent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "ai ouvert", "tu": "as ouvert", "il_elle": "a ouvert", "nous": "avons ouvert", "vous": "avez ouvert", "ils_elles": "ont ouvert"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "ouvrais", "tu": "ouvrais", "il_elle": "ouvrait", "nous": "ouvrions", "vous": "ouvriez", "ils_elles": "ouvraient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "ouvrirai", "tu": "ouvriras", "il_elle": "ouvrira", "nous": "ouvrirons", "vous": "ouvrirez", "ils_elles": "ouvriront"},
+        ]
+    },
+    {
+        "infinitive": "offrir",
+        "english": "to offer/give",
+        "spanish": "ofrecer/regalar",
+        "group": 3,
+        "is_irregular": True,
+        "auxiliary": "avoir",
+        "past_participle": "offert",
+        "present_participle": "offrant",
+        "spanish_comparison": "Cognate with Spanish 'ofrecer'. Conjugates like ouvrir.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "offre", "tu": "offres", "il_elle": "offre", "nous": "offrons", "vous": "offrez", "ils_elles": "offrent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "ai offert", "tu": "as offert", "il_elle": "a offert", "nous": "avons offert", "vous": "avez offert", "ils_elles": "ont offert"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "offrais", "tu": "offrais", "il_elle": "offrait", "nous": "offrions", "vous": "offriez", "ils_elles": "offraient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "offrirai", "tu": "offriras", "il_elle": "offrira", "nous": "offrirons", "vous": "offrirez", "ils_elles": "offriront"},
+        ]
+    },
+    {
+        "infinitive": "découvrir",
+        "english": "to discover",
+        "spanish": "descubrir",
+        "group": 3,
+        "is_irregular": True,
+        "auxiliary": "avoir",
+        "past_participle": "découvert",
+        "present_participle": "découvrant",
+        "spanish_comparison": "Cognate with Spanish 'descubrir'. Conjugates like ouvrir.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "découvre", "tu": "découvres", "il_elle": "découvre", "nous": "découvrons", "vous": "découvrez", "ils_elles": "découvrent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "ai découvert", "tu": "as découvert", "il_elle": "a découvert", "nous": "avons découvert", "vous": "avez découvert", "ils_elles": "ont découvert"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "découvrais", "tu": "découvrais", "il_elle": "découvrait", "nous": "découvrions", "vous": "découvriez", "ils_elles": "découvraient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "découvrirai", "tu": "découvriras", "il_elle": "découvrira", "nous": "découvrirons", "vous": "découvrirez", "ils_elles": "découvriront"},
+        ]
+    },
+    {
+        "infinitive": "courir",
+        "english": "to run",
+        "spanish": "correr",
+        "group": 3,
+        "is_irregular": True,
+        "auxiliary": "avoir",
+        "past_participle": "couru",
+        "present_participle": "courant",
+        "spanish_comparison": "Cognate with Spanish 'correr'. Irregular future.",
+        "conjugations": [
+            {"tense": "présent", "mood": "indicatif", "je": "cours", "tu": "cours", "il_elle": "court", "nous": "courons", "vous": "courez", "ils_elles": "courent"},
+            {"tense": "passé_composé", "mood": "indicatif", "je": "ai couru", "tu": "as couru", "il_elle": "a couru", "nous": "avons couru", "vous": "avez couru", "ils_elles": "ont couru"},
+            {"tense": "imparfait", "mood": "indicatif", "je": "courais", "tu": "courais", "il_elle": "courait", "nous": "courions", "vous": "couriez", "ils_elles": "couraient"},
+            {"tense": "futur_simple", "mood": "indicatif", "je": "courrai", "tu": "courras", "il_elle": "courra", "nous": "courrons", "vous": "courrez", "ils_elles": "courront"},
         ]
     },
 ]
