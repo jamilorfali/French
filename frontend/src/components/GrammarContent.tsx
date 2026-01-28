@@ -5,134 +5,256 @@ interface GrammarContentProps {
 }
 
 /**
+ * Parse markdown-style formatting in text
+ */
+function parseInlineFormatting(text: string): React.ReactNode[] {
+  const parts: React.ReactNode[] = [];
+  let remaining = text;
+  let key = 0;
+
+  while (remaining.length > 0) {
+    // Check for bold (**text**)
+    const boldMatch = remaining.match(/\*\*(.+?)\*\*/);
+    if (boldMatch && boldMatch.index !== undefined) {
+      // Add text before the match
+      if (boldMatch.index > 0) {
+        parts.push(<span key={key++}>{remaining.slice(0, boldMatch.index)}</span>);
+      }
+      // Add bold text
+      parts.push(<strong key={key++} className="font-semibold">{boldMatch[1]}</strong>);
+      remaining = remaining.slice(boldMatch.index + boldMatch[0].length);
+    } else {
+      // No more matches, add remaining text
+      parts.push(<span key={key++}>{remaining}</span>);
+      break;
+    }
+  }
+
+  return parts;
+}
+
+/**
  * Parses and renders grammar content with smart table detection.
- * Detects patterns like verb conjugations, pronoun tables, and structured lists.
+ * Supports markdown tables, lists, and formatted text.
  */
 export function GrammarContent({ content }: GrammarContentProps) {
   if (!content) return null;
 
-  // Split content into paragraphs/sections
-  const sections = content.split(/\n\n+/);
+  // Split content into blocks
+  const blocks = parseContentBlocks(content);
 
   return (
     <div className="space-y-4">
-      {sections.map((section, idx) => (
-        <GrammarSection key={idx} content={section.trim()} />
+      {blocks.map((block, idx) => (
+        <ContentBlock key={idx} block={block} />
       ))}
     </div>
   );
 }
 
-function GrammarSection({ content }: { content: string }) {
-  // Check if this section looks like a conjugation table
-  const conjugationPattern = /\b(je|tu|il|elle|nous|vous|ils|elles)\b.*[-=:→]/i;
-  const pronounPattern = /\b(moi|toi|lui|elle|nous|vous|eux|elles)\b.*[-=:→]/i;
-  const articlePattern = /\b(le|la|les|un|une|des)\b.*[-=:→]/i;
+type Block =
+  | { type: 'markdown-table'; rows: string[][] }
+  | { type: 'list'; items: string[]; ordered: boolean }
+  | { type: 'paragraph'; text: string };
 
-  // Check for table-like patterns (lines with consistent delimiters)
-  const lines = content.split('\n').filter(line => line.trim());
-  const hasTableStructure = lines.length >= 2 && lines.every(line =>
-    line.includes(' - ') || line.includes(': ') || line.includes(' → ') || line.includes(' = ')
-  );
+function parseContentBlocks(content: string): Block[] {
+  const blocks: Block[] = [];
+  const lines = content.split('\n');
+  let i = 0;
 
-  // Check for conjugation-specific patterns
-  const isConjugationTable = lines.some(line => conjugationPattern.test(line));
-  const isPronounTable = lines.some(line => pronounPattern.test(line)) && lines.length >= 3;
-  const isArticleTable = lines.some(line => articlePattern.test(line)) && lines.length >= 2;
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmedLine = line.trim();
 
-  if (hasTableStructure && (isConjugationTable || isPronounTable || isArticleTable)) {
-    return <StructuredTable lines={lines} />;
+    // Skip empty lines
+    if (!trimmedLine) {
+      i++;
+      continue;
+    }
+
+    // Check for markdown table (lines starting with |)
+    if (trimmedLine.startsWith('|')) {
+      const tableLines: string[] = [];
+      while (i < lines.length && lines[i].trim().startsWith('|')) {
+        tableLines.push(lines[i].trim());
+        i++;
+      }
+      const tableBlock = parseMarkdownTable(tableLines);
+      if (tableBlock) {
+        blocks.push(tableBlock);
+      }
+      continue;
+    }
+
+    // Check for bullet list
+    if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ') || trimmedLine.startsWith('• ')) {
+      const listItems: string[] = [];
+      while (i < lines.length) {
+        const listLine = lines[i].trim();
+        if (listLine.startsWith('- ') || listLine.startsWith('* ') || listLine.startsWith('• ')) {
+          listItems.push(listLine.replace(/^[-*•]\s*/, ''));
+          i++;
+        } else if (listLine === '') {
+          i++;
+          break;
+        } else {
+          break;
+        }
+      }
+      if (listItems.length > 0) {
+        blocks.push({ type: 'list', items: listItems, ordered: false });
+      }
+      continue;
+    }
+
+    // Check for numbered list
+    if (/^\d+[.)]\s/.test(trimmedLine)) {
+      const listItems: string[] = [];
+      while (i < lines.length) {
+        const listLine = lines[i].trim();
+        if (/^\d+[.)]\s/.test(listLine)) {
+          listItems.push(listLine.replace(/^\d+[.)]\s*/, ''));
+          i++;
+        } else if (listLine === '') {
+          i++;
+          break;
+        } else {
+          break;
+        }
+      }
+      if (listItems.length > 0) {
+        blocks.push({ type: 'list', items: listItems, ordered: true });
+      }
+      continue;
+    }
+
+    // Regular paragraph - collect consecutive non-special lines
+    const paragraphLines: string[] = [];
+    while (i < lines.length) {
+      const pLine = lines[i];
+      const pTrimmed = pLine.trim();
+
+      // Stop at empty line or special block start
+      if (!pTrimmed || pTrimmed.startsWith('|') ||
+          pTrimmed.startsWith('- ') || pTrimmed.startsWith('* ') ||
+          pTrimmed.startsWith('• ') || /^\d+[.)]\s/.test(pTrimmed)) {
+        break;
+      }
+
+      paragraphLines.push(pLine);
+      i++;
+    }
+
+    if (paragraphLines.length > 0) {
+      blocks.push({ type: 'paragraph', text: paragraphLines.join('\n') });
+    }
   }
 
-  // Check for simple list pattern (lines starting with - or *)
-  const isSimpleList = lines.length >= 2 && lines.every(line =>
-    line.trim().startsWith('-') || line.trim().startsWith('*') || line.trim().startsWith('•')
-  );
+  return blocks;
+}
 
-  if (isSimpleList) {
+function parseMarkdownTable(lines: string[]): Block | null {
+  if (lines.length < 2) return null;
+
+  const rows: string[][] = [];
+
+  for (const line of lines) {
+    // Skip separator rows (|---|---|)
+    if (/^\|[-:\s|]+\|$/.test(line)) continue;
+
+    // Parse cells
+    const cells = line
+      .split('|')
+      .map(cell => cell.trim())
+      .filter((cell, idx, arr) => {
+        // Filter out empty first/last cells from leading/trailing |
+        if (idx === 0 && cell === '') return false;
+        if (idx === arr.length - 1 && cell === '') return false;
+        return true;
+      });
+
+    if (cells.length > 0) {
+      rows.push(cells);
+    }
+  }
+
+  if (rows.length === 0) return null;
+  return { type: 'markdown-table', rows };
+}
+
+function ContentBlock({ block }: { block: Block }) {
+  if (block.type === 'markdown-table') {
+    return <MarkdownTable rows={block.rows} />;
+  }
+
+  if (block.type === 'list') {
+    if (block.ordered) {
+      return (
+        <ol className="space-y-1 text-gray-700 list-decimal list-inside ml-2">
+          {block.items.map((item, idx) => (
+            <li key={idx}>{parseInlineFormatting(item)}</li>
+          ))}
+        </ol>
+      );
+    }
     return (
-      <ul className="space-y-1 text-gray-700">
-        {lines.map((line, idx) => (
+      <ul className="space-y-1 text-gray-700 ml-2">
+        {block.items.map((item, idx) => (
           <li key={idx} className="flex items-start gap-2">
-            <span className="text-primary-500">•</span>
-            <span>{line.replace(/^[-*•]\s*/, '')}</span>
+            <span className="text-primary-500 mt-1">•</span>
+            <span>{parseInlineFormatting(item)}</span>
           </li>
         ))}
       </ul>
     );
   }
 
-  // Check for numbered list
-  const isNumberedList = lines.length >= 2 && lines.every(line =>
-    /^\d+[.)]\s/.test(line.trim())
-  );
-
-  if (isNumberedList) {
-    return (
-      <ol className="space-y-1 text-gray-700 list-decimal list-inside">
-        {lines.map((line, idx) => (
-          <li key={idx}>{line.replace(/^\d+[.)]\s*/, '')}</li>
-        ))}
-      </ol>
-    );
-  }
-
-  // Default: render as paragraph with preserved whitespace
+  // Paragraph
   return (
-    <p className="text-gray-700 whitespace-pre-wrap">{content}</p>
+    <p className="text-gray-700 whitespace-pre-wrap">
+      {parseInlineFormatting(block.text)}
+    </p>
   );
 }
 
-function StructuredTable({ lines }: { lines: string[] }) {
-  // Parse lines into key-value pairs
-  const rows = lines.map(line => {
-    // Try different delimiters
-    const delimiters = [' → ', ' = ', ' - ', ': '];
-    for (const delimiter of delimiters) {
-      const idx = line.indexOf(delimiter);
-      if (idx > 0) {
-        return {
-          left: line.substring(0, idx).trim(),
-          right: line.substring(idx + delimiter.length).trim(),
-        };
-      }
-    }
-    return { left: line, right: '' };
-  });
+function MarkdownTable({ rows }: { rows: string[][] }) {
+  if (rows.length === 0) return null;
 
-  // Detect if this is a conjugation table (pronouns in first column)
-  const pronouns = ['je', 'tu', 'il', 'elle', "il/elle", "on", 'nous', 'vous', 'ils', 'elles', "ils/elles"];
-  const isConjugation = rows.some(row =>
-    pronouns.some(p => row.left.toLowerCase().startsWith(p))
-  );
-
-  // Detect if this is a tonic pronoun or similar table
-  const tonicPronouns = ['moi', 'toi', 'lui', 'elle', 'nous', 'vous', 'eux', 'elles', 'soi'];
-  const isTonicTable = rows.some(row =>
-    tonicPronouns.some(p => row.left.toLowerCase() === p || row.right.toLowerCase().includes(p))
-  );
+  const hasHeader = rows.length > 1;
+  const headerRow = hasHeader ? rows[0] : null;
+  const bodyRows = hasHeader ? rows.slice(1) : rows;
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm border-collapse">
-        <thead>
-          <tr className="bg-primary-50 border-b border-primary-200">
-            <th className="text-left py-2 px-3 font-semibold text-primary-800">
-              {isConjugation ? 'Subject' : isTonicTable ? 'Pronoun' : 'French'}
-            </th>
-            <th className="text-left py-2 px-3 font-semibold text-primary-800">
-              {isConjugation ? 'Conjugation' : isTonicTable ? 'Meaning/Use' : 'Meaning'}
-            </th>
-          </tr>
-        </thead>
+    <div className="overflow-x-auto my-3">
+      <table className="w-full text-sm border-collapse border border-gray-200 rounded-lg">
+        {headerRow && (
+          <thead>
+            <tr className="bg-primary-50">
+              {headerRow.map((cell, idx) => (
+                <th
+                  key={idx}
+                  className="text-left py-2 px-3 font-semibold text-primary-800 border-b border-primary-200"
+                >
+                  {parseInlineFormatting(cell)}
+                </th>
+              ))}
+            </tr>
+          </thead>
+        )}
         <tbody>
-          {rows.map((row, idx) => (
+          {bodyRows.map((row, rowIdx) => (
             <tr
-              key={idx}
-              className={`border-b border-gray-100 ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}
+              key={rowIdx}
+              className={`border-b border-gray-100 ${rowIdx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
             >
-              <td className="py-2 px-3 font-medium text-gray-900">{row.left}</td>
-              <td className="py-2 px-3 text-gray-700">{row.right}</td>
+              {row.map((cell, cellIdx) => (
+                <td
+                  key={cellIdx}
+                  className={`py-2 px-3 ${cellIdx === 0 ? 'font-medium text-gray-900' : 'text-gray-700'}`}
+                >
+                  {parseInlineFormatting(cell)}
+                </td>
+              ))}
             </tr>
           ))}
         </tbody>

@@ -18,7 +18,7 @@ const navItems = [
   { path: '/', icon: Home, label: 'Home' },
   { path: '/practice', icon: Play, label: 'Practice' },
   { path: '/lessons', icon: BookOpen, label: 'Lessons' },
-  { path: '/vocabulary', icon: Languages, label: 'Vocab' },
+  { path: '/vocabulary', icon: Languages, label: 'Vocabulary' },
   { path: '/verbs', icon: Book, label: 'Verbs' },
   { path: '/grammar', icon: GraduationCap, label: 'Grammar' },
   { path: '/progress', icon: BarChart3, label: 'Progress' },

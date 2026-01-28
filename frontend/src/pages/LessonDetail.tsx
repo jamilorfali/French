@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Target, BookOpen, Play, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Clock, Target, BookOpen, Play, CheckCircle, Volume2 } from 'lucide-react';
 import { getLesson, getGrammarTopics, getVocabulary } from '../services/api';
 import { useLevel } from '../contexts/LevelContext';
+import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
 import { GrammarContent } from '../components/GrammarContent';
 import type { Lesson, Grammar, Vocabulary } from '../types';
 
 export default function LessonDetail() {
   const { lessonId } = useParams<{ lessonId: string }>();
   const { currentLevel, loading: levelLoading } = useLevel();
+  const { speakFrench, speaking } = useSpeechSynthesis();
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [relatedGrammar, setRelatedGrammar] = useState<Grammar[]>([]);
   const [relatedVocabulary, setRelatedVocabulary] = useState<Vocabulary[]>([]);
@@ -32,12 +34,80 @@ export default function LessonDetail() {
         setRelatedGrammar(filteredGrammar);
 
         // Fetch vocabulary related to lesson themes
+        // Map themes to related vocabulary categories for better matching
+        const themeToCategories: Record<string, string[]> = {
+          'greetings': ['greetings', 'courtesy', 'introductions'],
+          'introductions': ['greetings', 'courtesy', 'introductions', 'identity'],
+          'identity': ['identity', 'introductions', 'personal'],
+          'family': ['family', 'people', 'relationships'],
+          'descriptions': ['adjectives', 'colors', 'descriptions', 'appearance'],
+          'numbers': ['numbers', 'counting', 'time'],
+          'days': ['days', 'time', 'calendar'],
+          'months': ['months', 'time', 'calendar', 'seasons'],
+          'time': ['time', 'numbers', 'days', 'calendar'],
+          'preferences': ['preferences', 'food', 'activities', 'opinions'],
+          'food': ['food', 'drinks', 'meals', 'restaurant'],
+          'activities': ['activities', 'hobbies', 'sports', 'verbs'],
+          'home': ['home', 'house', 'rooms', 'furniture'],
+          'places': ['places', 'city', 'locations', 'buildings'],
+          'location': ['location', 'places', 'prepositions', 'directions'],
+          'daily_routines': ['daily', 'routines', 'activities', 'time'],
+          'shopping': ['shopping', 'food', 'stores', 'money'],
+          'transportation': ['transportation', 'travel', 'vehicles'],
+          'directions': ['directions', 'location', 'prepositions'],
+          'travel': ['travel', 'transportation', 'places'],
+          'past': ['time', 'past', 'verbs'],
+          'events': ['events', 'activities', 'time'],
+          'movement': ['movement', 'verbs', 'travel'],
+          'work': ['work', 'jobs', 'career', 'office'],
+          'career': ['career', 'work', 'jobs', 'professional'],
+          'professional': ['professional', 'work', 'office', 'business'],
+          'memories': ['memories', 'past', 'time', 'family'],
+          'hypotheses': ['hypotheses', 'conditions', 'grammar'],
+          'conditions': ['conditions', 'hypotheses', 'grammar'],
+          'wishes': ['wishes', 'desires', 'emotions'],
+          'complex_sentences': ['grammar', 'sentences', 'writing'],
+          'obligation': ['obligation', 'necessity', 'grammar'],
+          'necessity': ['necessity', 'obligation', 'grammar'],
+          'desire': ['desire', 'wishes', 'emotions'],
+          'debate': ['debate', 'opinion', 'arguments'],
+          'opinion': ['opinion', 'debate', 'arguments'],
+          'argumentation': ['argumentation', 'debate', 'opinion'],
+          'regret': ['regret', 'emotions', 'past'],
+          'media': ['media', 'news', 'communication'],
+          'processes': ['processes', 'work', 'actions'],
+          'formal': ['formal', 'writing', 'professional'],
+          'nuance': ['nuance', 'writing', 'formal'],
+          'writing': ['writing', 'formal', 'academic'],
+          'actions': ['actions', 'verbs', 'activities'],
+          'manner': ['manner', 'adverbs', 'grammar'],
+          'literature': ['literature', 'reading', 'writing'],
+          'style': ['style', 'writing', 'literature'],
+          'reading': ['reading', 'literature', 'books'],
+          'emotions': ['emotions', 'feelings', 'adjectives'],
+          'doubt': ['doubt', 'emotions', 'uncertainty'],
+          'reporting': ['reporting', 'speech', 'communication'],
+          'academic': ['academic', 'writing', 'formal'],
+        };
+
         const vocabData = await getVocabulary({ level: currentLevel });
-        const filteredVocab = vocabData.filter((v: Vocabulary) =>
-          (lessonData.themes || []).some((theme: string) =>
-            v.category?.toLowerCase().includes(theme.toLowerCase())
-          )
-        ).slice(0, 20);
+        const lessonThemes = lessonData.themes || [];
+
+        // Get all relevant categories for the lesson themes
+        const relevantCategories = new Set<string>();
+        lessonThemes.forEach((theme: string) => {
+          const themeLower = theme.toLowerCase();
+          relevantCategories.add(themeLower);
+          (themeToCategories[themeLower] || []).forEach(cat => relevantCategories.add(cat));
+        });
+
+        const filteredVocab = vocabData.filter((v: Vocabulary) => {
+          const vocabCategory = v.category?.toLowerCase() || '';
+          // Check if vocabulary category matches any relevant category
+          return Array.from(relevantCategories).some(cat =>
+            vocabCategory.includes(cat) || cat.includes(vocabCategory)
+          );
+        }).slice(0, 20);
         setRelatedVocabulary(filteredVocab);
       } catch (error) {
         console.error('Failed to fetch lesson:', error);
@@ -266,18 +336,29 @@ export default function LessonDetail() {
                 {relatedVocabulary.map((vocab) => (
                   <div key={vocab.id} className="card p-4">
                     <div className="flex justify-between items-start">
-                      <div>
-                        <span className="text-lg font-semibold text-primary-700">
-                          {vocab.french}
-                        </span>
-                        {vocab.gender && vocab.gender !== 'none' && (
-                          <span className="ml-2 text-xs text-gray-500">
-                            ({vocab.gender === 'masculine' ? 'm' : vocab.gender === 'feminine' ? 'f' : vocab.gender})
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => speakFrench(vocab.french)}
+                          disabled={speaking}
+                          className="text-primary-600 hover:text-primary-700 p-1"
+                          type="button"
+                          aria-label={`Pronounce ${vocab.french}`}
+                        >
+                          <Volume2 size={18} />
+                        </button>
+                        <div>
+                          <span className="text-lg font-semibold text-primary-700">
+                            {vocab.french}
                           </span>
-                        )}
-                        {vocab.phonetic && (
-                          <span className="ml-2 text-sm text-gray-400">[{vocab.phonetic}]</span>
-                        )}
+                          {vocab.gender && vocab.gender !== 'none' && (
+                            <span className="ml-2 text-xs text-gray-500">
+                              ({vocab.gender === 'masculine' ? 'm' : vocab.gender === 'feminine' ? 'f' : vocab.gender})
+                            </span>
+                          )}
+                          {vocab.phonetic && (
+                            <span className="ml-2 text-sm text-gray-400">[{vocab.phonetic}]</span>
+                          )}
+                        </div>
                       </div>
                       {vocab.is_cognate && (
                         <span className="badge bg-green-100 text-green-700 text-xs">Cognate</span>
