@@ -183,32 +183,34 @@ body {
     100% { background-color: transparent; }
   }
 
-  /* Spanish Advantage Card - Theme-aware */
+}
+
+/* Spanish Advantage Card - Outside of @layer for proper specificity */
+.spanish-advantage-card {
+  background: linear-gradient(to right, #fffbeb, #fff7ed) !important;
+  border-color: #fcd34d !important;
+}
+
+.spanish-advantage-title {
+  color: #78350f !important;
+}
+
+.spanish-advantage-text {
+  color: #92400e !important;
+}
+
+@media (prefers-color-scheme: dark) {
   .spanish-advantage-card {
-    @apply bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200;
+    background: linear-gradient(to right, rgba(120, 53, 15, 0.4), rgba(154, 52, 18, 0.4)) !important;
+    border-color: rgba(251, 191, 36, 0.5) !important;
   }
 
   .spanish-advantage-title {
-    @apply text-amber-900;
+    color: #fcd34d !important;
   }
 
   .spanish-advantage-text {
-    @apply text-amber-800;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .spanish-advantage-card {
-      background: linear-gradient(to right, rgb(120 53 15 / 0.3), rgb(154 52 18 / 0.3)) !important;
-      border-color: rgb(180 83 9 / 0.5) !important;
-    }
-
-    .spanish-advantage-title {
-      color: rgb(253 230 138) !important; /* amber-200 */
-    }
-
-    .spanish-advantage-text {
-      color: rgb(252 211 77) !important; /* amber-300 */
-    }
+    color: #fbbf24 !important;
   }
 }
 

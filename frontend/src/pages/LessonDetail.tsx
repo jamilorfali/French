@@ -105,7 +105,8 @@ export default function LessonDetail() {
           'legal': ['legal', 'formal'],
         };
 
-        const vocabData = await getVocabulary({ level: currentLevel });
+        // Fetch ALL vocabulary for the level (default limit is 50, which misses categories at the end)
+        const vocabData = await getVocabulary({ level: currentLevel, limit: 200 });
         const lessonThemes = lessonData.themes || [];
 
         // Get all relevant categories for the lesson themes
@@ -396,7 +397,18 @@ export default function LessonDetail() {
                     )}
                     {vocab.example_french && (
                       <div className="mt-2 pt-2 border-t border-gray-100">
-                        <p className="text-sm text-primary-600 italic">"{vocab.example_french}"</p>
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-sm text-primary-600 italic">"{vocab.example_french}"</p>
+                          <button
+                            onClick={() => speakFrench(vocab.example_french!)}
+                            disabled={speaking}
+                            className="text-primary-600 hover:text-primary-700 p-1 flex-shrink-0"
+                            type="button"
+                            aria-label={`Pronounce example: ${vocab.example_french}`}
+                          >
+                            <Volume2 size={14} />
+                          </button>
+                        </div>
                         <p className="text-xs text-gray-500">{vocab.example_english}</p>
                       </div>
                     )}
