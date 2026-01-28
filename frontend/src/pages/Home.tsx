@@ -253,12 +253,12 @@ export default function Home() {
       </div>
 
       {/* Spanish Advantage Note */}
-      <div className="card bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
+      <div className="card spanish-advantage-card">
         <div className="flex items-start gap-3">
           <span className="text-2xl">🇪🇸</span>
           <div>
-            <h3 className="font-semibold text-gray-900">Your Spanish Advantage</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="font-semibold spanish-advantage-title">Your Spanish Advantage</h3>
+            <p className="text-sm spanish-advantage-text">
               As a fluent Spanish speaker, you'll see cognate hints and Spanish comparisons
               throughout your learning. French and Spanish share ~75% lexical similarity!
             </p>

@@ -290,7 +290,18 @@ export default function LessonDetail() {
                       <div className="space-y-2">
                         {grammar.examples.map((example, idx) => (
                           <div key={idx} className="p-3 bg-gray-50 rounded-lg">
-                            <p className="font-medium text-primary-700">{example.french}</p>
+                            <div className="flex items-start justify-between gap-2">
+                              <p className="font-medium text-primary-700">{example.french}</p>
+                              <button
+                                onClick={() => speakFrench(example.french)}
+                                disabled={speaking}
+                                className="text-primary-600 hover:text-primary-700 p-1 flex-shrink-0"
+                                type="button"
+                                aria-label={`Pronounce: ${example.french}`}
+                              >
+                                <Volume2 size={16} />
+                              </button>
+                            </div>
                             <p className="text-sm text-gray-600">{example.english}</p>
                             {example.spanish && (
                               <p className="text-sm text-gray-500 italic">ES: {example.spanish}</p>

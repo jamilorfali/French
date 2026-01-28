@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
+import { ChevronDown, ChevronUp, BookOpen, Volume2 } from 'lucide-react';
 import { getGrammarTopics } from '../services/api';
 import { useLevel } from '../contexts/LevelContext';
+import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
 import { GrammarContent } from '../components/GrammarContent';
 import type { Grammar as GrammarType } from '../types';
 
 export default function Grammar() {
   const { currentLevel, currentLevelInfo, loading: levelLoading } = useLevel();
+  const { speakFrench, speaking } = useSpeechSynthesis();
   const [topics, setTopics] = useState<GrammarType[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
@@ -92,7 +94,18 @@ export default function Grammar() {
                     <div className="space-y-2">
                       {topic.examples.map((ex, idx) => (
                         <div key={idx} className="p-3 bg-gray-50 rounded-lg">
-                          <p className="font-medium text-gray-900">{ex.french}</p>
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="font-medium text-gray-900">{ex.french}</p>
+                            <button
+                              onClick={() => speakFrench(ex.french)}
+                              disabled={speaking}
+                              className="text-primary-600 hover:text-primary-700 p-1 flex-shrink-0"
+                              type="button"
+                              aria-label={`Pronounce: ${ex.french}`}
+                            >
+                              <Volume2 size={16} />
+                            </button>
+                          </div>
                           <p className="text-sm text-gray-600">{ex.english}</p>
                           {ex.spanish && (
                             <p className="text-sm text-yellow-600">ES: {ex.spanish}</p>
