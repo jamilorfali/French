@@ -23,16 +23,19 @@ from app.seed.vocabulary_a2 import VOCABULARY_A2
 from app.seed.vocabulary_b1 import VOCABULARY_B1
 from app.seed.vocabulary_b2 import VOCABULARY_B2
 from app.seed.vocabulary_c1 import VOCABULARY_C1
+from app.seed.vocabulary_c2 import VOCABULARY_C2
 from app.seed.verbs_a1 import VERBS_A1
 from app.seed.verbs_a2 import VERBS_A2
 from app.seed.verbs_b1 import VERBS_B1
 from app.seed.verbs_b2 import VERBS_B2
 from app.seed.verbs_c1 import VERBS_C1
+from app.seed.verbs_c2 import VERBS_C2
 from app.seed.grammar_a1 import GRAMMAR_A1
 from app.seed.grammar_a2 import GRAMMAR_A2
 from app.seed.grammar_b1 import GRAMMAR_B1
 from app.seed.grammar_b2 import GRAMMAR_B2
 from app.seed.grammar_c1 import GRAMMAR_C1
+from app.seed.grammar_c2 import GRAMMAR_C2
 
 
 # All vocabulary by level
@@ -42,6 +45,7 @@ VOCABULARY_BY_LEVEL = {
     "B1": VOCABULARY_B1,
     "B2": VOCABULARY_B2,
     "C1": VOCABULARY_C1,
+    "C2": VOCABULARY_C2,
 }
 
 # All verbs by level
@@ -51,6 +55,7 @@ VERBS_BY_LEVEL = {
     "B1": VERBS_B1,
     "B2": VERBS_B2,
     "C1": VERBS_C1,
+    "C2": VERBS_C2,
 }
 
 # All grammar by level
@@ -60,6 +65,7 @@ GRAMMAR_BY_LEVEL = {
     "B1": GRAMMAR_B1,
     "B2": GRAMMAR_B2,
     "C1": GRAMMAR_C1,
+    "C2": GRAMMAR_C2,
 }
 
 # Lessons by level
@@ -422,6 +428,78 @@ LESSONS_BY_LEVEL = {
             "themes": ["writing", "argumentation", "academic"],
             "grammar_topics": ["concession_opposition", "infinitif_passe", "participe_present_adjectif_verbal"],
             "estimated_duration": 60
+        },
+    ],
+    "C2": [
+        {
+            "unit_number": 1,
+            "title": "Les temps littéraires",
+            "description": "Master the literary past tenses used in formal writing and literature.",
+            "objectives": [
+                "Recognize and understand passé antérieur",
+                "Identify subjonctif plus-que-parfait in texts",
+                "Analyze classic French literature excerpts",
+                "Understand the relationship between literary tenses"
+            ],
+            "themes": ["literature", "literary", "reading", "style"],
+            "grammar_topics": ["passe_anterieur", "subjonctif_plus_que_parfait"],
+            "estimated_duration": 65
+        },
+        {
+            "unit_number": 2,
+            "title": "L'élégance stylistique",
+            "description": "Develop sophisticated stylistic techniques in French.",
+            "objectives": [
+                "Use stylistic inversion appropriately",
+                "Master the expletive 'ne' in all contexts",
+                "Write in elevated register",
+                "Identify stylistic devices in authentic texts"
+            ],
+            "themes": ["style", "formal", "writing", "stylistics"],
+            "grammar_topics": ["inversion_stylistique", "ne_explétif_complet"],
+            "estimated_duration": 65
+        },
+        {
+            "unit_number": 3,
+            "title": "Les constructions complexes",
+            "description": "Master complex grammatical structures for advanced expression.",
+            "objectives": [
+                "Use advanced impersonal constructions",
+                "Apply strict sequence of tenses",
+                "Navigate between different registers",
+                "Express nuanced ideas precisely"
+            ],
+            "themes": ["rhetoric", "academic", "connectors", "formal"],
+            "grammar_topics": ["constructions_impersonnelles", "concordance_des_temps"],
+            "estimated_duration": 65
+        },
+        {
+            "unit_number": 4,
+            "title": "Maîtriser les registres",
+            "description": "Navigate fluidly between different language registers.",
+            "objectives": [
+                "Distinguish soutenu, standard, and familier registers",
+                "Adapt speech to context appropriately",
+                "Understand colloquial and argot expressions",
+                "Write effectively in formal academic French"
+            ],
+            "themes": ["idioms", "verbs", "literary", "philosophy"],
+            "grammar_topics": ["registres_de_langue"],
+            "estimated_duration": 65
+        },
+        {
+            "unit_number": 5,
+            "title": "L'expression idiomatique",
+            "description": "Master idiomatic structures unique to French.",
+            "objectives": [
+                "Use all gallicisms naturally",
+                "Recognize and employ literary expressions",
+                "Master rare verbs and their usage",
+                "Achieve native-like fluency in expression"
+            ],
+            "themes": ["idioms", "legal", "connectors", "rhetoric"],
+            "grammar_topics": ["gallicismes"],
+            "estimated_duration": 65
         },
     ],
 }
