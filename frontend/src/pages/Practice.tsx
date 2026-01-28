@@ -4,12 +4,12 @@ import {
   Play,
   Pause,
   Volume2,
-  Mic,
-  MicOff,
   Check,
   X,
   ArrowRight,
   RotateCcw,
+  SkipForward,
+  Target,
 } from 'lucide-react';
 import {
   startPracticeSession,
@@ -18,7 +18,6 @@ import {
   completePracticeSession,
 } from '../services/api';
 import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis';
-import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import type { Exercise, ExerciseResult, PracticeStartResponse } from '../types';
 
 type SessionState = 'config' | 'active' | 'feedback' | 'complete';
@@ -42,10 +41,13 @@ export default function Practice() {
     const urlDuration = searchParams.get('duration');
     return urlDuration ? parseInt(urlDuration, 10) : 15;
   });
-  const [focusAreas, setFocusAreas] = useState<string[]>([]);
+  const [focusAreas, setFocusAreas] = useState<string[]>(() => {
+    // Read initial focus area from URL query param (e.g., ?type=weak_areas)
+    const urlType = searchParams.get('type');
+    return urlType === 'weak_areas' ? ['weak_areas'] : [];
+  });
 
   const { speakFrench, speaking, supported: ttsSupported } = useSpeechSynthesis();
-  const { listenForFrench, stopListening, listening, transcript, confidence, supported: sttSupported } = useSpeechRecognition();
 
   const handleStartSession = async () => {
     try {
@@ -109,13 +111,11 @@ export default function Practice() {
     await fetchNextExercise(sessionId);
   };
 
-  const handleStartRecording = async () => {
-    try {
-      const result = await listenForFrench();
-      if (result?.transcript) setUserAnswer(result.transcript);
-    } catch (error) {
-      console.error('Speech error:', error);
-    }
+  const handleSkip = async () => {
+    // Skip the current exercise without submitting (counts as incorrect)
+    if (!sessionId) return;
+    setIncorrectCount((c) => c + 1);
+    await fetchNextExercise(sessionId);
   };
 
   const handlePlayAudio = useCallback(() => {
@@ -156,15 +156,32 @@ export default function Practice() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Focus Area (select one)</h2>
           <div className="flex flex-wrap gap-2">
-            {['listening', 'conjugation', 'gender', 'pronunciation'].map((area) => (
-              <button key={area}
-                onClick={() => setFocusAreas(focusAreas.includes(area) ? [] : [area])}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors capitalize ${focusAreas.includes(area) ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
-                {area}
+            {[
+              { id: 'weak_areas', label: 'Focus Areas', icon: Target, description: 'Practice your weak spots' },
+              { id: 'listening', label: 'Listening', icon: null, description: null },
+              { id: 'conjugation', label: 'Conjugation', icon: null, description: null },
+              { id: 'gender', label: 'Gender', icon: null, description: null },
+            ].map((area) => (
+              <button key={area.id}
+                onClick={() => setFocusAreas(focusAreas.includes(area.id) ? [] : [area.id])}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                  focusAreas.includes(area.id)
+                    ? area.id === 'weak_areas' ? 'bg-red-600 text-white' : 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}>
+                {area.icon && <area.icon size={16} />}
+                {area.label}
               </button>
             ))}
           </div>
-          <p className="text-sm text-gray-500 mt-2">Leave empty for mixed practice</p>
+          {focusAreas.includes('weak_areas') && (
+            <p className="text-sm text-red-600 mt-2 font-medium">
+              You'll practice items you've gotten wrong in past sessions
+            </p>
+          )}
+          {!focusAreas.includes('weak_areas') && (
+            <p className="text-sm text-gray-500 mt-2">Leave empty for mixed practice</p>
+          )}
         </div>
         <button onClick={handleStartSession}
           className="w-full py-4 bg-blue-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-blue-700">
@@ -265,18 +282,14 @@ export default function Practice() {
 
                 {(exercise.type === 'speaking' || exercise.type === 'pronunciation') && !hasOptions() && (
                   <div className="text-center space-y-4">
-                    <button onClick={listening ? stopListening : handleStartRecording} disabled={!sttSupported}
-                      className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto ${listening ? 'bg-red-500 text-white animate-pulse' : sttSupported ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500'}`}>
-                      {listening ? <MicOff size={36} /> : <Mic size={36} />}
+                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <p className="text-yellow-800 font-medium">Pronunciation exercises are not available</p>
+                      <p className="text-sm text-yellow-700 mt-1">Speech recognition requires browser permissions that may not be available.</p>
+                    </div>
+                    <button onClick={handleSkip}
+                      className="px-6 py-3 bg-gray-500 text-white rounded-lg font-medium flex items-center gap-2 mx-auto hover:bg-gray-600">
+                      <SkipForward size={20} /> Skip This Exercise
                     </button>
-                    <p className="text-sm text-gray-500">{!sttSupported ? 'Speech recognition not supported' : listening ? 'Listening... Click to stop' : 'Click to start recording'}</p>
-                    {transcript && (
-                      <div className="p-4 bg-gray-100 rounded-lg">
-                        <p className="text-sm text-gray-500 mb-1">You said:</p>
-                        <p className="text-lg font-medium text-gray-900">"{transcript}"</p>
-                        {confidence > 0 && <p className="text-xs text-gray-400 mt-1">Confidence: {(confidence * 100).toFixed(0)}%</p>}
-                      </div>
-                    )}
                   </div>
                 )}
               </div>

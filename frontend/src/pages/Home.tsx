@@ -202,12 +202,13 @@ export default function Home() {
         </Link>
       )}
 
-      {/* Weak Areas */}
+      {/* Weak Areas - Clickable to navigate to Practice */}
       {weakAreas.length > 0 && (
-        <div className="card">
+        <Link to="/practice?type=weak_areas" className="card card-hover block">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Target size={20} className="text-error-500" />
             Focus Areas
+            <span className="ml-auto text-sm font-normal text-primary-600">Practice →</span>
           </h2>
           <div className="space-y-3">
             {weakAreas.map((area, index) => (
@@ -235,7 +236,7 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </div>
+        </Link>
       )}
 
       {/* Quick Links */}

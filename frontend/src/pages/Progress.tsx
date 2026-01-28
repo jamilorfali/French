@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   BarChart3,
   TrendingUp,
@@ -155,12 +156,13 @@ export default function Progress() {
         </div>
       )}
 
-      {/* Weak Areas */}
+      {/* Weak Areas - Clickable to navigate to Practice */}
       {weakAreas.length > 0 && (
-        <div className="card">
+        <Link to="/practice?type=weak_areas" className="card card-hover block">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Target size={20} className="text-error-500" />
             Areas Needing Practice
+            <span className="ml-auto text-sm font-normal text-primary-600">Practice →</span>
           </h2>
           <div className="space-y-2">
             {weakAreas.map((area, index) => (
@@ -186,7 +188,7 @@ export default function Progress() {
               </div>
             ))}
           </div>
-        </div>
+        </Link>
       )}
 
       {/* Recent Sessions */}
