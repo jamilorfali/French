@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Clock, Target, BookOpen, Play, CheckCircle } from 'lucide-react';
 import { getLesson, getGrammarTopics, getVocabulary } from '../services/api';
 import { useLevel } from '../contexts/LevelContext';
+import { GrammarContent } from '../components/GrammarContent';
 import type { Lesson, Grammar, Vocabulary } from '../types';
 
 export default function LessonDetail() {
@@ -209,8 +210,8 @@ export default function LessonDetail() {
                   <h2 className="text-lg font-semibold text-gray-900 mb-3">
                     {grammar.title}
                   </h2>
-                  <div className="prose prose-sm max-w-none text-gray-700">
-                    <p>{grammar.explanation_en}</p>
+                  <div className="prose prose-sm max-w-none">
+                    <GrammarContent content={grammar.explanation_en} />
                   </div>
 
                   {grammar.examples && grammar.examples.length > 0 && (

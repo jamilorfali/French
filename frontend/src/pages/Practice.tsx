@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useCallback, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Play,
   Pause,
@@ -25,6 +25,7 @@ type SessionState = 'config' | 'active' | 'feedback' | 'complete';
 
 export default function Practice() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [sessionState, setSessionState] = useState<SessionState>('config');
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [totalExercises, setTotalExercises] = useState(0);
@@ -36,7 +37,11 @@ export default function Practice() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
-  const [duration, setDuration] = useState(15);
+  const [duration, setDuration] = useState(() => {
+    // Read initial duration from URL query param, default to 15
+    const urlDuration = searchParams.get('duration');
+    return urlDuration ? parseInt(urlDuration, 10) : 15;
+  });
   const [focusAreas, setFocusAreas] = useState<string[]>([]);
 
   const { speakFrench, speaking, supported: ttsSupported } = useSpeechSynthesis();

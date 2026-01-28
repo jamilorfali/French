@@ -166,30 +166,108 @@ export default function Verbs() {
                       {conj.tense.replace('_', ' ')} ({conj.mood})
                     </h4>
                     <div className="grid grid-cols-2 gap-2 text-sm">
-                      <div className="bg-gray-50 p-2 rounded">
-                        <span className="text-gray-500">je</span>
-                        <span className="ml-2 font-medium">{conj.je}</span>
-                      </div>
-                      <div className="bg-gray-50 p-2 rounded">
-                        <span className="text-gray-500">tu</span>
-                        <span className="ml-2 font-medium">{conj.tu}</span>
-                      </div>
-                      <div className="bg-gray-50 p-2 rounded">
-                        <span className="text-gray-500">il/elle</span>
-                        <span className="ml-2 font-medium">{conj.il_elle}</span>
-                      </div>
-                      <div className="bg-gray-50 p-2 rounded">
-                        <span className="text-gray-500">nous</span>
-                        <span className="ml-2 font-medium">{conj.nous}</span>
-                      </div>
-                      <div className="bg-gray-50 p-2 rounded">
-                        <span className="text-gray-500">vous</span>
-                        <span className="ml-2 font-medium">{conj.vous}</span>
-                      </div>
-                      <div className="bg-gray-50 p-2 rounded">
-                        <span className="text-gray-500">ils/elles</span>
-                        <span className="ml-2 font-medium">{conj.ils_elles}</span>
-                      </div>
+                      {conj.je && (
+                        <div className="bg-gray-50 p-2 rounded flex items-center justify-between">
+                          <div>
+                            <span className="text-gray-500">je</span>
+                            <span className="ml-2 font-medium">{conj.je}</span>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); speakFrench(conj.je!); }}
+                            disabled={speaking}
+                            className="text-primary-500 hover:text-primary-700 p-1"
+                            type="button"
+                            aria-label={`Pronounce ${conj.je}`}
+                          >
+                            <Volume2 size={14} />
+                          </button>
+                        </div>
+                      )}
+                      {conj.tu && (
+                        <div className="bg-gray-50 p-2 rounded flex items-center justify-between">
+                          <div>
+                            <span className="text-gray-500">tu</span>
+                            <span className="ml-2 font-medium">{conj.tu}</span>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); speakFrench(conj.tu!); }}
+                            disabled={speaking}
+                            className="text-primary-500 hover:text-primary-700 p-1"
+                            type="button"
+                            aria-label={`Pronounce ${conj.tu}`}
+                          >
+                            <Volume2 size={14} />
+                          </button>
+                        </div>
+                      )}
+                      {conj.il_elle && (
+                        <div className="bg-gray-50 p-2 rounded flex items-center justify-between">
+                          <div>
+                            <span className="text-gray-500">il/elle</span>
+                            <span className="ml-2 font-medium">{conj.il_elle}</span>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); speakFrench(conj.il_elle!); }}
+                            disabled={speaking}
+                            className="text-primary-500 hover:text-primary-700 p-1"
+                            type="button"
+                            aria-label={`Pronounce ${conj.il_elle}`}
+                          >
+                            <Volume2 size={14} />
+                          </button>
+                        </div>
+                      )}
+                      {conj.nous && (
+                        <div className="bg-gray-50 p-2 rounded flex items-center justify-between">
+                          <div>
+                            <span className="text-gray-500">nous</span>
+                            <span className="ml-2 font-medium">{conj.nous}</span>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); speakFrench(conj.nous!); }}
+                            disabled={speaking}
+                            className="text-primary-500 hover:text-primary-700 p-1"
+                            type="button"
+                            aria-label={`Pronounce ${conj.nous}`}
+                          >
+                            <Volume2 size={14} />
+                          </button>
+                        </div>
+                      )}
+                      {conj.vous && (
+                        <div className="bg-gray-50 p-2 rounded flex items-center justify-between">
+                          <div>
+                            <span className="text-gray-500">vous</span>
+                            <span className="ml-2 font-medium">{conj.vous}</span>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); speakFrench(conj.vous!); }}
+                            disabled={speaking}
+                            className="text-primary-500 hover:text-primary-700 p-1"
+                            type="button"
+                            aria-label={`Pronounce ${conj.vous}`}
+                          >
+                            <Volume2 size={14} />
+                          </button>
+                        </div>
+                      )}
+                      {conj.ils_elles && (
+                        <div className="bg-gray-50 p-2 rounded flex items-center justify-between">
+                          <div>
+                            <span className="text-gray-500">ils/elles</span>
+                            <span className="ml-2 font-medium">{conj.ils_elles}</span>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); speakFrench(conj.ils_elles!); }}
+                            disabled={speaking}
+                            className="text-primary-500 hover:text-primary-700 p-1"
+                            type="button"
+                            aria-label={`Pronounce ${conj.ils_elles}`}
+                          >
+                            <Volume2 size={14} />
+                          </button>
+                        </div>
+                      )}
                     </div>
                     {conj.spanish_equivalent && (
                       <p className="text-xs text-yellow-600 mt-1">

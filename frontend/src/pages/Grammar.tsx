@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
 import { getGrammarTopics } from '../services/api';
 import { useLevel } from '../contexts/LevelContext';
+import { GrammarContent } from '../components/GrammarContent';
 import type { Grammar as GrammarType } from '../types';
 
 export default function Grammar() {
@@ -69,9 +70,7 @@ export default function Grammar() {
               <div className="mt-4 space-y-4">
                 {/* English Explanation */}
                 <div className="prose prose-sm max-w-none">
-                  <div className="whitespace-pre-wrap text-gray-700">
-                    {topic.explanation_en}
-                  </div>
+                  <GrammarContent content={topic.explanation_en} />
                 </div>
 
                 {/* Spanish Comparison */}

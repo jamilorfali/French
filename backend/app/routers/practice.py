@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import datetime
+import unicodedata
 
 from ..database import get_db
 from ..models import PracticeSession, User
@@ -252,9 +253,44 @@ def check_answer(exercise_type: str, user_answer, correct_answer: dict) -> bool:
             return user_answer == expected
         return False
 
-    elif exercise_type in ("listening", "speaking"):
-        # These are more complex - for now, just accept
-        return True
+    elif exercise_type == "listening":
+        # Listening is multiple choice - compare index
+        return user_answer == correct_answer.get("correct_index")
+
+    elif exercise_type in ("speaking", "pronunciation"):
+        # Compare spoken text with expected text using similarity
+        expected = correct_answer.get("expected_text", "").lower().strip()
+        user = str(user_answer).lower().strip()
+        # Normalize: remove accents and punctuation for comparison
+        def normalize(s):
+            # Remove accents
+            s = unicodedata.normalize('NFD', s)
+            s = ''.join(c for c in s if unicodedata.category(c) != 'Mn')
+            # Remove punctuation and extra spaces
+            s = ''.join(c for c in s if c.isalnum() or c.isspace())
+            return ' '.join(s.split())
+
+        norm_expected = normalize(expected)
+        norm_user = normalize(user)
+
+        # Exact match after normalization
+        if norm_expected == norm_user:
+            return True
+
+        # Calculate similarity (simple Levenshtein-like approach)
+        # Allow 80% similarity threshold
+        if not norm_expected or not norm_user:
+            return False
+
+        # Simple word-based matching
+        expected_words = set(norm_expected.split())
+        user_words = set(norm_user.split())
+        if not expected_words:
+            return False
+
+        common_words = expected_words.intersection(user_words)
+        similarity = len(common_words) / len(expected_words)
+        return similarity >= 0.7  # 70% of words match
 
     return False
 

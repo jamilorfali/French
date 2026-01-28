@@ -11,6 +11,13 @@ body {
   min-height: 100vh;
 }
 
+/* Dark mode base */
+@media (prefers-color-scheme: dark) {
+  body {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
+
 /* Custom utilities */
 @layer utilities {
   .text-balance {
@@ -25,8 +32,20 @@ body {
     @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6;
   }
 
+  @media (prefers-color-scheme: dark) {
+    .card {
+      @apply bg-gray-800 border-gray-700;
+    }
+  }
+
   .card-hover {
     @apply transition-all duration-200 hover:shadow-md hover:border-gray-200;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .card-hover {
+      @apply hover:border-gray-600;
+    }
   }
 
   /* Button variants */
@@ -42,6 +61,12 @@ body {
     @apply btn bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300;
   }
 
+  @media (prefers-color-scheme: dark) {
+    .btn-secondary {
+      @apply bg-gray-700 text-gray-200 hover:bg-gray-600 active:bg-gray-500;
+    }
+  }
+
   .btn-success {
     @apply btn bg-success-500 text-white hover:bg-success-600;
   }
@@ -52,6 +77,12 @@ body {
 
   .btn-outline {
     @apply btn border-2 border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .btn-outline {
+      @apply border-gray-600 text-gray-300 hover:border-gray-500 hover:bg-gray-800;
+    }
   }
 
   .btn-lg {
@@ -67,6 +98,12 @@ body {
     @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all;
   }
 
+  @media (prefers-color-scheme: dark) {
+    .input {
+      @apply bg-gray-800 border-gray-600 text-gray-100 focus:ring-primary-400 focus:border-primary-400;
+    }
+  }
+
   /* Badge styles */
   .badge {
     @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
@@ -76,21 +113,51 @@ body {
     @apply badge bg-primary-100 text-primary-800;
   }
 
+  @media (prefers-color-scheme: dark) {
+    .badge-primary {
+      @apply bg-primary-900 text-primary-200;
+    }
+  }
+
   .badge-success {
     @apply badge bg-success-100 text-success-600;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .badge-success {
+      @apply bg-green-900 text-green-300;
+    }
   }
 
   .badge-warning {
     @apply badge bg-warning-100 text-warning-600;
   }
 
+  @media (prefers-color-scheme: dark) {
+    .badge-warning {
+      @apply bg-yellow-900 text-yellow-300;
+    }
+  }
+
   .badge-error {
     @apply badge bg-error-100 text-error-600;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .badge-error {
+      @apply bg-red-900 text-red-300;
+    }
   }
 
   /* Progress bar */
   .progress-bar {
     @apply h-2 bg-gray-200 rounded-full overflow-hidden;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .progress-bar {
+      @apply bg-gray-700;
+    }
   }
 
   .progress-bar-fill {
@@ -114,6 +181,84 @@ body {
   @keyframes flash-red {
     0% { background-color: rgb(239 68 68 / 0.3); }
     100% { background-color: transparent; }
+  }
+}
+
+/* Dark mode overrides for common Tailwind classes used in components */
+@media (prefers-color-scheme: dark) {
+  /* Background colors */
+  .bg-white {
+    background-color: rgb(31 41 55) !important; /* gray-800 */
+  }
+  .bg-gray-50 {
+    background-color: rgb(17 24 39) !important; /* gray-900 */
+  }
+  .bg-gray-100 {
+    background-color: rgb(55 65 81) !important; /* gray-700 */
+  }
+  .bg-gray-200 {
+    background-color: rgb(75 85 99) !important; /* gray-600 */
+  }
+
+  /* Text colors */
+  .text-gray-900 {
+    color: rgb(243 244 246) !important; /* gray-100 */
+  }
+  .text-gray-800 {
+    color: rgb(229 231 235) !important; /* gray-200 */
+  }
+  .text-gray-700 {
+    color: rgb(209 213 219) !important; /* gray-300 */
+  }
+  .text-gray-600 {
+    color: rgb(156 163 175) !important; /* gray-400 */
+  }
+  .text-gray-500 {
+    color: rgb(156 163 175) !important; /* gray-400 */
+  }
+
+  /* Border colors */
+  .border-gray-100 {
+    border-color: rgb(55 65 81) !important; /* gray-700 */
+  }
+  .border-gray-200 {
+    border-color: rgb(75 85 99) !important; /* gray-600 */
+  }
+  .border-gray-300 {
+    border-color: rgb(107 114 128) !important; /* gray-500 */
+  }
+
+  /* Hover states */
+  .hover\:bg-gray-100:hover {
+    background-color: rgb(55 65 81) !important;
+  }
+  .hover\:bg-gray-200:hover {
+    background-color: rgb(75 85 99) !important;
+  }
+  .hover\:bg-gray-300:hover {
+    background-color: rgb(107 114 128) !important;
+  }
+
+  /* Special backgrounds for feedback */
+  .bg-green-50, .bg-green-100 {
+    background-color: rgb(20 83 45 / 0.3) !important;
+  }
+  .bg-red-50, .bg-red-100 {
+    background-color: rgb(127 29 29 / 0.3) !important;
+  }
+  .bg-yellow-50, .bg-yellow-100 {
+    background-color: rgb(113 63 18 / 0.3) !important;
+  }
+  .bg-blue-50, .bg-blue-100 {
+    background-color: rgb(30 58 138 / 0.3) !important;
+  }
+  .bg-primary-50, .bg-primary-100 {
+    background-color: rgb(30 58 138 / 0.3) !important;
+  }
+
+  /* Ring and focus states */
+  .focus\:ring-primary-500:focus {
+    --tw-ring-color: rgb(59 130 246) !important;
   }
 }
 
