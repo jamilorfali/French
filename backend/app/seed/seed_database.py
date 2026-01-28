@@ -543,9 +543,9 @@ def seed_verbs(db: Session, levels: dict[str, CEFRLevel]):
         conj_count = 0
 
         for verb_data in verb_list:
+            # Check by infinitive only (UNIQUE constraint is on infinitive alone)
             existing = db.query(Verb).filter(
-                Verb.infinitive == verb_data["infinitive"],
-                Verb.cefr_level_id == level.id
+                Verb.infinitive == verb_data["infinitive"]
             ).first()
 
             if existing:
