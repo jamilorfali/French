@@ -810,6 +810,7 @@ def seed_lessons(db: Session, levels: dict[str, CEFRLevel]):
     """Seed lessons for all levels."""
     print("Seeding lessons...")
     total_count = 0
+    updated_count = 0
 
     for level_code, lessons_list in LESSONS_BY_LEVEL.items():
         level = levels.get(level_code)
@@ -818,6 +819,7 @@ def seed_lessons(db: Session, levels: dict[str, CEFRLevel]):
             continue
 
         count = 0
+        level_updated = 0
         for lesson_data in lessons_list:
             existing = db.query(Lesson).filter(
                 Lesson.unit_number == lesson_data["unit_number"],
@@ -825,6 +827,14 @@ def seed_lessons(db: Session, levels: dict[str, CEFRLevel]):
             ).first()
 
             if existing:
+                # Update existing lesson with new data (including themes)
+                existing.title = lesson_data["title"]
+                existing.description = lesson_data["description"]
+                existing.objectives = lesson_data["objectives"]
+                existing.themes = lesson_data["themes"]
+                existing.grammar_topics = lesson_data["grammar_topics"]
+                existing.estimated_duration = lesson_data["estimated_duration"]
+                level_updated += 1
                 continue
 
             lesson = Lesson(
@@ -841,10 +851,11 @@ def seed_lessons(db: Session, levels: dict[str, CEFRLevel]):
             count += 1
 
         total_count += count
-        print(f"    - {level_code}: {count} lessons")
+        updated_count += level_updated
+        print(f"    - {level_code}: {count} new, {level_updated} updated")
 
     db.commit()
-    print(f"  ✓ Seeded {total_count} lessons total")
+    print(f"  ✓ Seeded {total_count} new lessons, updated {updated_count} existing")
 
 
 def seed_default_user(db: Session):

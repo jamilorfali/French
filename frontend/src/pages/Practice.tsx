@@ -266,6 +266,20 @@ export default function Practice() {
               </div>
             )}
 
+            {/* Translation exercise - show speaker button to hear the French phrase */}
+            {exercise.type === 'translation' && (
+              <div className="text-center mb-4">
+                <button onClick={() => speakFrench(exercise.content?.french_phrase || '')} disabled={speaking}
+                  className={`px-6 py-3 rounded-lg font-medium flex items-center gap-2 mx-auto ${speaking ? 'bg-purple-300 text-purple-600' : 'bg-purple-600 text-white hover:bg-purple-700'}`}>
+                  {speaking ? <Pause size={20} /> : <Volume2 size={20} />}
+                  {speaking ? 'Playing...' : 'Listen to Phrase'}
+                </button>
+                {exercise.content?.context && (
+                  <p className="text-sm text-purple-600 mt-2 italic">{exercise.content.context}</p>
+                )}
+              </div>
+            )}
+
             <div className="text-center">
               <p className="text-xl font-semibold text-gray-900">{exercise.content?.prompt || exercise.content?.question || 'Complete the exercise'}</p>
               {exercise.content?.phonetic && sessionState === 'active' && <p className="text-sm text-gray-500 mt-2 font-mono">[{exercise.content.phonetic}]</p>}
