@@ -257,6 +257,10 @@ def check_answer(exercise_type: str, user_answer, correct_answer: dict) -> bool:
         # Listening is multiple choice - compare index
         return user_answer == correct_answer.get("correct_index")
 
+    elif exercise_type == "translation":
+        # Translation is multiple choice - compare index
+        return user_answer == correct_answer.get("correct_index")
+
     elif exercise_type in ("speaking", "pronunciation"):
         # Compare spoken text with expected text using similarity
         expected = correct_answer.get("expected_text", "").lower().strip()

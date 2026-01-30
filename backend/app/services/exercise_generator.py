@@ -332,6 +332,68 @@ class ExerciseGenerator:
 
         return {"content": content, "answer": answer}
 
+    def generate_translation_exercise(
+        self,
+        vocabulary: Vocabulary,
+        all_vocabulary: list[Vocabulary] = None
+    ) -> dict:
+        """
+        Generate a translation exercise for colloquial/informal French phrases.
+        User sees a French phrase and must select the correct English translation.
+
+        Args:
+            vocabulary: Vocabulary item with colloquial French phrase
+            all_vocabulary: List of all vocabulary for distractors
+
+        Returns:
+            Exercise content dictionary
+        """
+        # Get distractors from other colloquial vocabulary
+        options = [vocabulary.english]
+        if all_vocabulary:
+            distractors = [
+                v for v in all_vocabulary
+                if v.id != vocabulary.id and v.english != vocabulary.english
+            ]
+            random.shuffle(distractors)
+            options.extend([d.english for d in distractors[:3]])
+
+        # Ensure we have 4 options
+        while len(options) < 4:
+            options.append("I don't know")
+
+        random.shuffle(options)
+        correct_index = options.index(vocabulary.english)
+
+        content = {
+            "type": "translation",
+            "french_phrase": vocabulary.french,
+            "prompt": f"What does this mean: \"{vocabulary.french}\"?",
+            "question": "Select the correct translation:",
+            "options": options,
+            "vocabulary_id": vocabulary.id,
+            "context": vocabulary.notes or "Colloquial/informal French",
+        }
+
+        # Add phonetic if available
+        if vocabulary.phonetic:
+            content["phonetic"] = vocabulary.phonetic
+
+        # Add Spanish comparison if available
+        if vocabulary.spanish:
+            content["spanish_hint"] = f"Compare with Spanish: {vocabulary.spanish}"
+
+        answer = {
+            "correct_index": correct_index,
+            "correct_answer": vocabulary.english,
+            "french": vocabulary.french,
+            "explanation": vocabulary.notes,
+            "example": vocabulary.example_french,
+            "example_english": vocabulary.example_english,
+        }
+
+        return {"content": content, "answer": answer}
+
     def generate_sentence_builder(
         self,
         vocabulary_items: list[Vocabulary],
@@ -438,6 +500,8 @@ class ExerciseGenerator:
             if "pronunciation" in focus_areas:
                 exercise_types.extend([ExerciseType.SPEAKING] * 3)
                 exercise_types.append(ExerciseType.LISTENING)
+            if "translation" in focus_areas:
+                exercise_types.extend([ExerciseType.TRANSLATION] * 4)
             # Fallback if empty
             if not exercise_types:
                 exercise_types = [ExerciseType.VOCABULARY_FLASHCARD, ExerciseType.MULTIPLE_CHOICE]
@@ -481,6 +545,15 @@ class ExerciseGenerator:
                 if nouns:
                     vocab = random.choice(nouns)
                     exercise = self.generate_gender_exercise(vocab)
+
+            elif exercise_type == ExerciseType.TRANSLATION and vocabulary:
+                # Prefer colloquial vocabulary for translation exercises
+                colloquial_vocab = [v for v in vocabulary if v.category and 'colloquial' in v.category.lower()]
+                if colloquial_vocab:
+                    vocab = random.choice(colloquial_vocab)
+                else:
+                    vocab = random.choice(vocabulary)
+                exercise = self.generate_translation_exercise(vocab, vocabulary)
 
             if exercise:
                 exercise["type"] = exercise_type.value

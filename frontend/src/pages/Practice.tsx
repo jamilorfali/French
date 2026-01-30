@@ -145,6 +145,7 @@ export default function Practice() {
       vocabulary_flashcard: 'Vocabulary', multiple_choice: 'Multiple Choice',
       listening: 'Listening', speaking: 'Pronunciation',
       conjugation: 'Conjugation', gender: 'Gender Practice',
+      translation: 'Translation',
     };
     return names[exercise.type] || exercise.type.replace(/_/g, ' ');
   };
@@ -174,12 +175,15 @@ export default function Practice() {
               { id: 'listening', label: 'Listening', icon: null, description: null },
               { id: 'conjugation', label: 'Conjugation', icon: null, description: null },
               { id: 'gender', label: 'Gender', icon: null, description: null },
+              { id: 'translation', label: 'Translation', icon: null, description: 'Colloquial French phrases' },
             ].map((area) => (
               <button key={area.id}
                 onClick={() => setFocusAreas(focusAreas.includes(area.id) ? [] : [area.id])}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                   focusAreas.includes(area.id)
-                    ? area.id === 'weak_areas' ? 'bg-red-600 text-white' : 'bg-blue-600 text-white'
+                    ? area.id === 'weak_areas' ? 'bg-red-600 text-white'
+                    : area.id === 'translation' ? 'bg-purple-600 text-white'
+                    : 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}>
                 {area.icon && <area.icon size={16} />}
@@ -192,7 +196,12 @@ export default function Practice() {
               You'll practice items you've gotten wrong in past sessions
             </p>
           )}
-          {!focusAreas.includes('weak_areas') && (
+          {focusAreas.includes('translation') && (
+            <p className="text-sm text-purple-600 mt-2 font-medium">
+              Practice translating colloquial and informal French expressions
+            </p>
+          )}
+          {!focusAreas.includes('weak_areas') && !focusAreas.includes('translation') && (
             <p className="text-sm text-gray-500 mt-2">Leave empty for mixed practice</p>
           )}
         </div>

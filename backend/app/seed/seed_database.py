@@ -36,16 +36,17 @@ from app.seed.grammar_b1 import GRAMMAR_B1
 from app.seed.grammar_b2 import GRAMMAR_B2
 from app.seed.grammar_c1 import GRAMMAR_C1
 from app.seed.grammar_c2 import GRAMMAR_C2
+from app.seed.vocabulary_colloquial import COLLOQUIAL_BY_LEVEL
 
 
-# All vocabulary by level
+# All vocabulary by level (includes regular + colloquial)
 VOCABULARY_BY_LEVEL = {
-    "A1": VOCABULARY_A1,
-    "A2": VOCABULARY_A2,
-    "B1": VOCABULARY_B1,
-    "B2": VOCABULARY_B2,
-    "C1": VOCABULARY_C1,
-    "C2": VOCABULARY_C2,
+    "A1": VOCABULARY_A1 + COLLOQUIAL_BY_LEVEL.get("A1", []),
+    "A2": VOCABULARY_A2 + COLLOQUIAL_BY_LEVEL.get("A2", []),
+    "B1": VOCABULARY_B1 + COLLOQUIAL_BY_LEVEL.get("B1", []),
+    "B2": VOCABULARY_B2 + COLLOQUIAL_BY_LEVEL.get("B2", []),
+    "C1": VOCABULARY_C1 + COLLOQUIAL_BY_LEVEL.get("C1", []),
+    "C2": VOCABULARY_C2 + COLLOQUIAL_BY_LEVEL.get("C2", []),
 }
 
 # All verbs by level
@@ -141,6 +142,21 @@ LESSONS_BY_LEVEL = {
             "grammar_topics": ["prepositions_place", "asking_questions"],
             "estimated_duration": 45
         },
+        {
+            "unit_number": 6,
+            "title": "Francais familier - Les bases",
+            "description": "Introduction to informal French expressions used in everyday conversation.",
+            "objectives": [
+                "Understand common filler words (ben, bof, ouais)",
+                "Use informal greetings (coucou, salut, bisous)",
+                "Recognize the difference between formal and informal French",
+                "Respond naturally in casual conversations"
+            ],
+            "themes": ["colloquial", "greetings", "informal"],
+            "grammar_topics": [],
+            "estimated_duration": 40,
+            "is_colloquial": True
+        },
     ],
     "A2": [
         {
@@ -212,6 +228,21 @@ LESSONS_BY_LEVEL = {
             "themes": ["movement", "travel", "past"],
             "grammar_topics": ["passe_compose_etre", "agreement"],
             "estimated_duration": 45
+        },
+        {
+            "unit_number": 6,
+            "title": "Francais familier - La vie quotidienne",
+            "description": "Everyday slang for work, food, and social situations.",
+            "objectives": [
+                "Use informal vocabulary for work (bosser, le boulot)",
+                "Learn slang for food and eating (bouffer, la bouffe)",
+                "Understand common expressions (un truc, un mec, une meuf)",
+                "Express opinions casually (kiffer, nickel, grave)"
+            ],
+            "themes": ["colloquial", "work", "food", "social"],
+            "grammar_topics": [],
+            "estimated_duration": 40,
+            "is_colloquial": True
         },
     ],
     "B1": [
@@ -285,6 +316,21 @@ LESSONS_BY_LEVEL = {
             "grammar_topics": ["subjonctif_introduction"],
             "estimated_duration": 50
         },
+        {
+            "unit_number": 6,
+            "title": "Francais familier - Exprimer ses emotions",
+            "description": "Express frustration, boredom, and stress like a native speaker.",
+            "objectives": [
+                "Express frustration (j'en ai marre, ca craint)",
+                "Describe difficult situations (la galere, se planter)",
+                "Talk about time pressure (etre a la bourre)",
+                "Use emphatic expressions (peter un cable, n'importe quoi)"
+            ],
+            "themes": ["colloquial", "emotions", "frustration", "stress"],
+            "grammar_topics": [],
+            "estimated_duration": 45,
+            "is_colloquial": True
+        },
     ],
     "B2": [
         {
@@ -356,6 +402,21 @@ LESSONS_BY_LEVEL = {
             "themes": ["actions", "processes", "manner"],
             "grammar_topics": ["gerondif"],
             "estimated_duration": 55
+        },
+        {
+            "unit_number": 6,
+            "title": "Francais familier - La vie sociale",
+            "description": "Navigate social situations with authentic informal French.",
+            "objectives": [
+                "Discuss relationships (draguer, se la peter)",
+                "Express moods and states (avoir le cafard, bourre)",
+                "Talk about problems (arnaque, se faire arnaquer)",
+                "Use emphatic speech (prendre la tete, se casser)"
+            ],
+            "themes": ["colloquial", "social", "relationships", "emotions"],
+            "grammar_topics": [],
+            "estimated_duration": 50,
+            "is_colloquial": True
         },
     ],
     "C1": [
@@ -429,6 +490,21 @@ LESSONS_BY_LEVEL = {
             "grammar_topics": ["concession_opposition", "infinitif_passe", "participe_present_adjectif_verbal"],
             "estimated_duration": 60
         },
+        {
+            "unit_number": 6,
+            "title": "Francais familier - Le langage colore",
+            "description": "Master expressive and colorful French expressions.",
+            "objectives": [
+                "Express annoyance eloquently (ca me saoule, c'est du n'importe quoi)",
+                "Discuss laziness and motivation (avoir la flemme, etre au taquet)",
+                "Use vivid expressions (foutre le bordel, laisser tomber)",
+                "Recognize subtle nuances (se faire des films, prise de tete)"
+            ],
+            "themes": ["colloquial", "expressions", "emotions", "advanced"],
+            "grammar_topics": [],
+            "estimated_duration": 55,
+            "is_colloquial": True
+        },
     ],
     "C2": [
         {
@@ -500,6 +576,21 @@ LESSONS_BY_LEVEL = {
             "themes": ["idioms", "legal", "connectors", "rhetoric"],
             "grammar_topics": ["gallicismes"],
             "estimated_duration": 65
+        },
+        {
+            "unit_number": 6,
+            "title": "Francais familier - Parler comme un natif",
+            "description": "Master native-level idiomatic and colloquial expressions.",
+            "objectives": [
+                "Use sophisticated idioms (couper les cheveux en quatre, rouler dans la farine)",
+                "Express opinions like a native (c'est du flan, etre a cote de la plaque)",
+                "Navigate delicate situations (mettre les pieds dans le plat, retourner sa veste)",
+                "Master vulgar but essential expressions appropriately (peter plus haut que son cul)"
+            ],
+            "themes": ["colloquial", "idioms", "native", "advanced"],
+            "grammar_topics": [],
+            "estimated_duration": 60,
+            "is_colloquial": True
         },
     ],
 }
