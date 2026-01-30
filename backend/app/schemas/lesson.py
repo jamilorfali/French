@@ -13,6 +13,8 @@ class LessonResponse(BaseModel):
     title: str
     description: Optional[str] = None
     estimated_duration: int
+    objectives: list[str] = []
+    themes: list[str] = []
 
     class Config:
         from_attributes = True
@@ -20,6 +22,4 @@ class LessonResponse(BaseModel):
 
 class LessonDetail(LessonResponse):
     """Schema for detailed lesson response."""
-    objectives: list[str] = []
-    themes: list[str] = []
     grammar_topics: list[str] = []
