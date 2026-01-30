@@ -49,6 +49,19 @@ export default function Practice() {
 
   const { speakFrench, speaking, supported: ttsSupported } = useSpeechSynthesis();
 
+  // Sync duration and focus areas from URL params (important for navigation from Home)
+  useEffect(() => {
+    const urlDuration = searchParams.get('duration');
+    const urlType = searchParams.get('type');
+
+    if (urlDuration) {
+      setDuration(parseInt(urlDuration, 10));
+    }
+    if (urlType === 'weak_areas') {
+      setFocusAreas(['weak_areas']);
+    }
+  }, [searchParams]);
+
   const handleStartSession = async () => {
     try {
       const sessionType = focusAreas.length === 1 ? focusAreas[0] : 'mixed';
@@ -252,23 +265,25 @@ export default function Practice() {
 
             {sessionState === 'active' && (
               <div className="mt-6">
-                {hasOptions() && (
-                  <div className="space-y-2">
-                    {(exercise.content?.options as string[]).map((option, idx) => (
-                      <button key={idx} onClick={() => setUserAnswer(idx)}
-                        className={`w-full p-4 text-left rounded-lg flex items-center gap-3 transition-colors ${userAnswer === idx ? 'bg-blue-100 border-2 border-blue-500 text-blue-900' : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'}`}>
-                        <span className="font-medium">{String.fromCharCode(65 + idx)}.</span> {option}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {exercise.type === 'gender' && !hasOptions() && (
+                {/* Gender exercise - always show le/la buttons and send the actual string */}
+                {exercise.type === 'gender' && (
                   <div className="flex gap-4 justify-center">
                     {['le', 'la'].map((article) => (
                       <button key={article} onClick={() => setUserAnswer(article)}
                         className={`px-8 py-4 text-2xl font-bold rounded-lg transition-colors ${userAnswer === article ? 'bg-blue-100 border-2 border-blue-500 text-blue-900' : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'}`}>
                         {article}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Multiple choice exercises (not gender) - send the index */}
+                {hasOptions() && exercise.type !== 'gender' && (
+                  <div className="space-y-2">
+                    {(exercise.content?.options as string[]).map((option, idx) => (
+                      <button key={idx} onClick={() => setUserAnswer(idx)}
+                        className={`w-full p-4 text-left rounded-lg flex items-center gap-3 transition-colors ${userAnswer === idx ? 'bg-blue-100 border-2 border-blue-500 text-blue-900' : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100'}`}>
+                        <span className="font-medium">{String.fromCharCode(65 + idx)}.</span> {option}
                       </button>
                     ))}
                   </div>
